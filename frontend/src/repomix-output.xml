@@ -1,0 +1,4095 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+components/
+  EmptyState.tsx
+  ErrorBoundary.tsx
+  Icons.tsx
+  MetricCard.tsx
+  NovaLogo.tsx
+  Sidebar.tsx
+  StatusBadge.tsx
+  Topbar.tsx
+lib/
+  api.ts
+  constructorTypes.ts
+  pricingCalculator.ts
+  pricingConfig.ts
+pages/
+  Agents.tsx
+  ConstructorPage.tsx
+  Infrastructure.tsx
+  Journal.tsx
+  LandingPage.tsx
+  Login.tsx
+  Overview.tsx
+  Team.tsx
+App.tsx
+main.tsx
+styles.css
+vite-env.d.ts
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path="components/EmptyState.tsx">
+import { CircleAlert } from './Icons'
+export function EmptyState({title,description}:{title:string;description:string}) { return <div className="empty"><CircleAlert size={20}/><div><strong>{title}</strong><p>{description}</p></div></div> }
+</file>
+
+<file path="components/ErrorBoundary.tsx">
+import { Component, type ErrorInfo, type ReactNode } from 'react'
+
+type Props = { children: ReactNode }
+type State = { hasError: boolean; message: string }
+
+export class ErrorBoundary extends Component<Props, State> {
+  state: State = { hasError: false, message: '' }
+
+  static getDerivedStateFromError(error: unknown): State {
+    return {
+      hasError: true,
+      message: error instanceof Error ? error.message : 'Неизвестная ошибка интерфейса',
+    }
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error('Nova UI error:', error, info)
+  }
+
+  render() {
+    if (!this.state.hasError) return this.props.children
+
+    return (
+      <main className="auth-shell">
+        <section className="auth-card">
+          <div className="auth-brand">
+            <div className="brand-mark">N</div>
+            <div><strong>nova</strong><span>AI operations</span></div>
+          </div>
+          <span className="section-label">NOVA / UI ERROR</span>
+          <h1>Не удалось открыть Nova</h1>
+          <p className="auth-copy">
+            Интерфейс получил неожиданные данные или произошла ошибка рендера.
+          </p>
+          <pre className="error-box" style={{ whiteSpace: 'pre-wrap' }}>{this.state.message}</pre>
+          <button className="primary-button" onClick={() => window.location.reload()}>
+            Перезагрузить
+          </button>
+        </section>
+      </main>
+    )
+  }
+}
+</file>
+
+<file path="components/Icons.tsx">
+import { Activity, Bot, Boxes, CheckCircle2, ChevronRight, CircleAlert, Clock3, Cpu, Database, LayoutDashboard, MessageSquareText, MoreHorizontal, Plus, RefreshCw, Server, Settings2, ShieldCheck, Users, X } from 'lucide-react'
+export { Activity, Bot, Boxes, CheckCircle2, ChevronRight, CircleAlert, Clock3, Cpu, Database, LayoutDashboard, MessageSquareText, MoreHorizontal, Plus, RefreshCw, Server, Settings2, ShieldCheck, Users, X }
+</file>
+
+<file path="components/MetricCard.tsx">
+import type { ReactNode } from 'react'
+export function MetricCard({label,value,detail,icon}:{label:string;value:string|number;detail:string;icon:ReactNode}) { return <div className="metric-card"><div className="metric-icon">{icon}</div><div><span>{label}</span><strong>{value}</strong><small>{detail}</small></div></div> }
+</file>
+
+<file path="components/NovaLogo.tsx">
+import type { SVGProps } from 'react'
+
+/** Звезда-маяк (Beacon Star) */
+export function NovaStar({
+  size = 28,
+  color = 'var(--accent-gold, #F59E0B)',
+  className = '',
+  ...props
+}: { size?: number; color?: string; className?: string } & SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}
+    >
+      {/* 4-конечная вытянутая звезда с вогнутыми гранями */}
+      <path
+        d="M50 2 C51.5 38 62 48.5 98 50 C62 51.5 51.5 62 50 98 C48.5 62 38 51.5 2 50 C38 48.5 48.5 38 50 2 Z"
+        fill={color}
+      />
+      {/* Маленькая точка-спутник */}
+      <circle cx="78" cy="68" r="4" fill="var(--color-gold-light, #FEF3C7)" />
+    </svg>
+  )
+}
+
+/** Большая фигура: звезда-маяк с орбитальным кольцом и планетой (из правой части Hero) */
+export function NovaBeaconOrbit({
+  size = 340,
+  className = '',
+  ...props
+}: { size?: number; className?: string } & SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 400 400"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={`nova-beacon-orbit ${className}`}
+      {...props}
+    >
+      <defs>
+        {/* Радиальное золотое свечение */}
+        <radialGradient id="beaconGlow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#F59E0B" stopOpacity="0.45" />
+          <stop offset="60%" stopColor="#F59E0B" stopOpacity="0.08" />
+          <stop offset="100%" stopColor="#F59E0B" stopOpacity="0" />
+        </radialGradient>
+        {/* Градиент орбитального кольца */}
+        <linearGradient id="orbitStroke" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.25" />
+          <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.2" />
+        </linearGradient>
+      </defs>
+
+      {/* Ореол сияния */}
+      <circle cx="200" cy="200" r="170" fill="url(#beaconGlow)" />
+
+      {/* Задняя дуга орбиты */}
+      <ellipse
+        cx="200"
+        cy="200"
+        rx="150"
+        ry="42"
+        stroke="url(#orbitStroke)"
+        strokeWidth="2.5"
+        strokeDasharray="480"
+        strokeDashoffset="240"
+      />
+
+      {/* Звезда-маяк (вертикальная доминанта) */}
+      <path
+        d="M200 15 C203.5 145 235 186.5 365 200 C235 213.5 203.5 255 200 385 C196.5 255 165 213.5 35 200 C165 186.5 196.5 145 200 15 Z"
+        fill="url(#goldStarGrad)"
+      />
+
+      {/* Градиент звезды */}
+      <linearGradient id="goldStarGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#F59E0B" />
+        <stop offset="50%" stopColor="#D97706" />
+        <stop offset="100%" stopColor="#B45309" />
+      </linearGradient>
+
+      {/* Передняя дуга орбиты */}
+      <ellipse
+        cx="200"
+        cy="200"
+        rx="150"
+        ry="42"
+        stroke="url(#orbitStroke)"
+        strokeWidth="2.5"
+        strokeDasharray="480"
+      />
+
+      {/* Спутник/планета на орбите */}
+      <circle cx="285" cy="228" r="10" fill="#FEF3C7" />
+      <circle cx="285" cy="228" r="14" stroke="#F59E0B" strokeWidth="1" strokeOpacity="0.6" />
+    </svg>
+  )
+}
+
+/** Иконка приложения / Аватар в скругленном квадрате (Squircle) */
+export function NovaAppIcon({ size = 48, className = '' }: { size?: number; className?: string }) {
+  return (
+    <div
+      className={`nova-app-icon ${className}`}
+      style={{
+        width: size,
+        height: size,
+        borderRadius: Math.round(size * 0.28),
+        background: '#0F172A',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+      }}
+    >
+      <NovaBeaconOrbit size={Math.round(size * 0.85)} />
+    </div>
+  )
+}
+
+/** Полный горизонтальный логотип: Звезда + NOVA AI */
+export function NovaLogo({ size = 24, className = '' }: { size?: number; className?: string }) {
+  return (
+    <div className={`nova-brand-lockup ${className}`}>
+      <NovaStar size={size} />
+      <div className="nova-brand-text">
+        <span className="brand-word">NOVA</span>
+        <span className="brand-word-ai">
+          <span className="letter-a">A</span>I
+        </span>
+      </div>
+    </div>
+  )
+}
+</file>
+
+<file path="components/Sidebar.tsx">
+import { useState, type ComponentType } from 'react'
+import { Bot, Boxes, LayoutDashboard, MessageSquareText, Settings2, Users } from './Icons'
+
+type Page='overview'|'agents'|'vms'|'journal'|'team'
+export function Sidebar({page,onNavigate,userName}:{page:Page;onNavigate:(p:Page)=>void;userName:string}) {
+ const [collapsed,setCollapsed]=useState(false)
+ const items:[Page,string,ComponentType<{size?:number}>][]=[['overview','Обзор',LayoutDashboard],['agents','AI-команда',Bot],['vms','Инфраструктура',Boxes],['journal','Журнал',MessageSquareText],['team','Команда',Users]]
+ return <aside className={`sidebar ${collapsed?'collapsed':''}`}>
+   <div className="brand"><div className="brand-mark">N</div><div className="brand-copy"><strong>nova</strong><span>AI operations</span></div></div>
+   <nav>{items.map(([key,label,Icon])=><button key={key} className={page===key?'active':''} onClick={()=>onNavigate(key)}><Icon size={19}/><span>{label}</span></button>)}</nav>
+   <div className="sidebar-bottom"><button onClick={()=>onNavigate('team')}><Settings2 size={18}/><span>Настройки</span></button><div className="user-chip"><div className="avatar">Ф</div><div><strong>{userName}</strong><span>Staff</span></div></div></div>
+   <button className="collapse" onClick={()=>setCollapsed(v=>!v)}>{collapsed?'→':'←'}</button>
+ </aside>
+}
+export type { Page }
+</file>
+
+<file path="components/StatusBadge.tsx">
+import type { VmStatus } from '../lib/api'
+export function StatusBadge({status}:{status:VmStatus}) {
+  const labels:Record<VmStatus,string>={ACTIVE:'Активна',RESTARTING:'Перезапуск',DISABLED:'Отключена',CREATING:'Создаётся',ERROR:'Ошибка'}
+  return <span className={`status status-${status.toLowerCase()}`}><i />{labels[status]}</span>
+}
+export function PermissionBadge({value}:{value:string}) {
+  const labels:Record<string,string>={smm:'SMM',methodologist:'Методолог',analyst:'Аналитик'}
+  return <span className="permission">{labels[value] ?? value}</span>
+}
+</file>
+
+<file path="components/Topbar.tsx">
+import { RefreshCw } from './Icons'
+export function Topbar({title,subtitle,onRefresh,loading}:{title:string;subtitle:string;onRefresh:()=>void;loading:boolean}) { return <header className="topbar"><div><div className="eyebrow">NOVA / CONTROL PLANE</div><h1>{title}</h1><p>{subtitle}</p></div><div className="top-actions"><span className="live-dot"><i/> Live</span><button className="icon-button" onClick={onRefresh} title="Обновить"><RefreshCw size={17} className={loading?'spin':''}/></button></div></header> }
+</file>
+
+<file path="lib/api.ts">
+export type AgentPermission = 'smm' | 'methodologist' | 'analyst'
+export type VmStatus = 'ACTIVE' | 'RESTARTING' | 'DISABLED' | 'CREATING' | 'ERROR'
+
+export interface User { id:number; name:string; email:string; phone_number?:string|null; created_at:string; is_staff:boolean }
+export interface Agent { id:number; user_id:number; agent_name:string; agent_description?:string|null; agent_vm_id:number; created_at:string; agent_permission:AgentPermission }
+export interface Vm { id:number; vm_proxmox_id:number; ipv4?:string|null; ipv6?:string|null; title:string; description?:string|null; status:VmStatus; cores:number; ram:number; rom:number; ostype:number }
+export interface Backlog { id:number; staff_id:number; vm_id:number; message:string; created_at:string }
+export interface LoginResponse { access_token:string; token_type:string; user:User }
+
+const base = import.meta.env.VITE_API_URL ?? '/api'
+const TOKEN_KEY = 'nova_access_token'
+
+export function getToken(){ return localStorage.getItem(TOKEN_KEY) }
+export function setToken(token:string){ localStorage.setItem(TOKEN_KEY, token) }
+export function clearToken(){ localStorage.removeItem(TOKEN_KEY) }
+
+async function request<T>(path:string, init?:RequestInit):Promise<T> {
+  const token = getToken()
+  const headers:HeadersInit = {
+    'Content-Type':'application/json',
+    ...(token ? { Authorization:`Bearer ${token}` } : {}),
+    ...(init?.headers ?? {})
+  }
+  const res = await fetch(`${base}${path}`, { ...init, headers })
+  if (!res.ok) {
+    let message = `API error ${res.status}`
+    try { const body = await res.json(); message = body.error ?? message } catch {}
+    if (res.status === 401) clearToken()
+    throw new Error(message)
+  }
+  if (res.status === 204) return undefined as T
+  return res.json()
+}
+
+export const api = {
+  login: async (email:string, password:string) => {
+    const result = await request<LoginResponse>('/auth/login', { method:'POST', body:JSON.stringify({email,password}) })
+    setToken(result.access_token)
+    return result
+  },
+  me: () => request<User>('/me'),
+  logout: () => clearToken(),
+  users: () => request<User[]>('/users'),
+  agents: (userId:number) => request<Agent[]>(`/users/${userId}/agents`),
+  vm: (id:number) => request<Vm>(`/vms/${id}`),
+  vmsByStatus: (status:string) => request<Vm[]>(`/vms/status/${status.toLowerCase()}`),
+  connections: (vmId:number) => request<Backlog[]>(`/vms/${vmId}/connections`),
+  createAgent: (userId:number, data:Partial<Agent>) => request<Agent>(`/users/${userId}/agents`, {method:'POST', body:JSON.stringify(data)}),
+  updateAgent: (id:number, data:Partial<Agent>) => request<Agent>(`/agents/${id}`, {method:'PUT', body:JSON.stringify(data)}),
+  createVm: (data:{title:string;description?:string|null;cores:number;ram:number;rom:number;ostype:number}) => request<Vm>('/vms', {method:'POST', body:JSON.stringify(data)}),
+  createUser: (data:{name:string;email:string;phone_number?:string|null;telegram_link?:string|null;whatsapp_link?:string|null;instagram_link?:string|null;vk_link?:string|null;password:string}) => request<User>('/users', {method:'POST', body:JSON.stringify(data)}),
+  updateUser: (id:number, data:{name:string;email:string;phone_number?:string|null;telegram_link?:string|null;whatsapp_link?:string|null;instagram_link?:string|null;vk_link?:string|null}) => request<User>(`/users/${id}`, {method:'PUT', body:JSON.stringify(data)}),
+  updateStaff: (id:number, is_staff:boolean) => request<User>(`/users/${id}/staff`, {method:'PATCH', body:JSON.stringify({is_staff})}),
+  updateVm: (id:number, data:Partial<Vm>) => request<Vm>(`/vms/${id}`, {method:'PUT', body:JSON.stringify(data)}),
+}
+</file>
+
+<file path="lib/constructorTypes.ts">
+export type ProductType = 'single' | 'bundle' | 'custom'
+
+// Добавлено 'publishing'
+export type IntegrationCategory = 'messenger' | 'social' | 'email' | 'crm' | 'publishing' | 'custom'
+export type IntegrationLevel = 1 | 2 | 3 | 'individual'
+
+export interface Product {
+  id: string
+  type: ProductType
+  title: string
+  subtitle: string
+  description: string
+  baseSetupPrice: number
+  baseMonthlyPrice: number
+  badge?: string
+  includedAdminCount: number
+  includedStorageGb: number
+  allowedFeatureIds: string[]
+}
+
+export interface Integration {
+  id: string
+  title: string
+  category: IntegrationCategory
+  level: IntegrationLevel
+  description: string
+  setupPrice: number
+  monthlyPrice: number
+  hasReadyConnector: boolean
+  requiresAccessGrant: boolean
+  requiresIndividualEstimate?: boolean
+  restrictionsNote?: string
+}
+
+export interface Feature {
+  id: string
+  title: string
+  description: string
+  category: 'core' | 'knowledge' | 'publishing' | 'automation'
+  setupPrice: number
+  monthlyPrice: number
+  requiresIndividualEstimate?: boolean
+  isHardScenario?: boolean
+}
+
+export interface PricingConfig {
+  maxAutoIntegrationsThreshold: number
+  extraEmployeeMonthlyPrice: number
+  extraStoragePerGbMonthlyPrice: number
+  manualDocumentPrepPrice: number
+  archiveProcessingPrice: number
+  levelPrices: {
+    1: { setup: number; monthly: number }
+    2: { setup: number; monthly: number }
+    3: { setup: number; monthly: number }
+  }
+  products: Product[]
+  features: Feature[]
+  integrations: Integration[]
+}
+
+export interface ConstructorState {
+  productId: string
+  featureIds: string[]
+  integrationIds: string[]
+  employeeCount: number
+  storageGb: number
+  manualDocProcessing: boolean
+  customImport: boolean
+  largeArchiveRecognition: boolean
+  publishingAssistance: boolean
+  aiPaymentMode: 'own-account' | 'shared-balance' | 'later'
+  clientComment: string
+}
+
+export interface PriceResult {
+  setupPrice: number | null
+  monthlyPrice: number | null
+  aiBudgetEstimateMonthly: number | null
+  requiresIndividualEstimate: boolean
+  estimateReasons: string[]
+  warnings: string[]
+  breakdown: {
+    baseSetup: number
+    integrationsSetup: number
+    featuresSetup: number
+    manualPrepSetup: number
+    baseMonthly: number
+    employeesMonthly: number
+    storageMonthly: number
+    integrationsMonthly: number
+    featuresMonthly: number
+  }
+}
+
+export interface LeadSubmission {
+  contactName: string
+  contactPhone: string
+  contactEmail: string
+  companyName?: string
+  wantsKpDownload: boolean
+  state: ConstructorState
+  pricingSummary: PriceResult
+}
+</file>
+
+<file path="lib/pricingCalculator.ts">
+import type { ConstructorState, PricingConfig, PriceResult } from './constructorTypes'
+
+export function calculatePrice(state: ConstructorState, config: PricingConfig): PriceResult {
+  const warnings: string[] = []
+  const estimateReasons: string[] = []
+
+  const product = config.products.find(p => p.id === state.productId) ?? config.products[0]
+
+  // 1. Проверка условия индивидуального расчёта
+  // Правило 1: Более 4 интеграций
+  if (state.integrationIds.length > config.maxAutoIntegrationsThreshold) {
+    estimateReasons.push(
+      `Выбрано более ${config.maxAutoIntegrationsThreshold} интеграций (${state.integrationIds.length} шт.). Архитектура требует согласования пропускной способности.`
+    )
+  }
+
+  // Правило 2: Чекбокс «Нестандартный импорт»
+  if (state.customImport) {
+    estimateReasons.push('Выбран «Нестандартный импорт данных»: требуется ручной анализ формата и структур.')
+  }
+
+  // Правило 3: Выбран продукт custom
+  if (product.type === 'custom') {
+    estimateReasons.push('Выбран формат «Индивидуальное решение» с персональным проектированием.')
+  }
+
+  // Правило 4: Выбраны интеграции с индивидуальной разработкой
+  const selectedIntegrations = config.integrations.filter(i => state.integrationIds.includes(i.id))
+  selectedIntegrations.forEach(i => {
+    if (i.requiresIndividualEstimate || i.level === 'individual') {
+      estimateReasons.push(`Индивидуальная интеграция: «${i.title}».`)
+    }
+  })
+
+  // Правило 5: Выбраны фичи с индивидуальной разработкой
+  const selectedFeatures = config.features.filter(f => state.featureIds.includes(f.id))
+  selectedFeatures.forEach(f => {
+    if (f.requiresIndividualEstimate) {
+      estimateReasons.push(`Сложный сценарий: «${f.title}».`)
+    }
+  })
+
+  // 2. Расчет разового запуска (Setup)
+  let baseSetup = product.baseSetupPrice
+
+  let integrationsSetup = 0
+  selectedIntegrations.forEach(i => {
+    if (typeof i.level === 'number') {
+      const levelCfg = config.levelPrices[i.level]
+      integrationsSetup += levelCfg?.setup ?? i.setupPrice
+    } else {
+      integrationsSetup += i.setupPrice
+    }
+  })
+
+  let featuresSetup = 0
+  selectedFeatures.forEach(f => {
+    featuresSetup += f.setupPrice
+  })
+
+  let manualPrepSetup = 0
+  if (state.manualDocProcessing) {
+    manualPrepSetup += config.manualDocumentPrepPrice
+  }
+  if (state.largeArchiveRecognition) {
+    manualPrepSetup += config.archiveProcessingPrice
+  }
+
+  const totalSetup = baseSetup + integrationsSetup + featuresSetup + manualPrepSetup
+
+  // 3. Расчет ежемесячного обслуживания (Monthly)
+  let baseMonthly = product.baseMonthlyPrice
+
+  // Сотрудники: первый администратор уже включен
+  const extraEmployees = Math.max(0, state.employeeCount - product.includedAdminCount)
+  const employeesMonthly = extraEmployees * config.extraEmployeeMonthlyPrice
+
+  // Дополнительное хранение
+  const extraStorageGb = Math.max(0, state.storageGb - product.includedStorageGb)
+  const storageMonthly = extraStorageGb * config.extraStoragePerGbMonthlyPrice
+
+  let integrationsMonthly = 0
+  selectedIntegrations.forEach(i => {
+    if (typeof i.level === 'number') {
+      const levelCfg = config.levelPrices[i.level]
+      integrationsMonthly += levelCfg?.monthly ?? i.monthlyPrice
+    } else {
+      integrationsMonthly += i.monthlyPrice
+    }
+  })
+
+  let featuresMonthly = 0
+  selectedFeatures.forEach(f => {
+    featuresMonthly += f.monthlyPrice
+  })
+
+  const totalMonthly = baseMonthly + employeesMonthly + storageMonthly + integrationsMonthly + featuresMonthly
+
+  // 4. Оценка расходов на AI (LLM токены)
+  let aiBudgetEstimate: number | null = null
+  if (state.aiPaymentMode === 'shared-balance') {
+    // Примерный ориентировочный бюджет токенов в зависимости от нагрузки
+    aiBudgetEstimate = Math.round(
+      (state.employeeCount * 1200 + (selectedIntegrations.length * 1000) + (state.storageGb * 30)) / 100
+    ) * 100
+  } else if (state.aiPaymentMode === 'own-account') {
+    aiBudgetEstimate = null
+    warnings.push('Оплата токенов производится вами напрямую провайдеру LLM (OpenAI, Anthropic и др.).')
+  } else {
+    aiBudgetEstimate = null
+    warnings.push('Способ взаиморасчётов по AI-бюджету будет зафиксирован на этапе согласования договора.')
+  }
+
+  const isIndividual = estimateReasons.length > 0
+
+  return {
+    setupPrice: isIndividual ? null : totalSetup,
+    monthlyPrice: isIndividual ? null : totalMonthly,
+    aiBudgetEstimateMonthly: isIndividual ? null : aiBudgetEstimate,
+    requiresIndividualEstimate: isIndividual,
+    estimateReasons,
+    warnings,
+    breakdown: {
+      baseSetup,
+      integrationsSetup,
+      featuresSetup,
+      manualPrepSetup,
+      baseMonthly,
+      employeesMonthly,
+      storageMonthly,
+      integrationsMonthly,
+      featuresMonthly,
+    },
+  }
+}
+</file>
+
+<file path="lib/pricingConfig.ts">
+import type { PricingConfig } from './constructorTypes'
+
+export const defaultPricingConfig: PricingConfig = {
+  maxAutoIntegrationsThreshold: 4,
+  extraEmployeeMonthlyPrice: 2500,
+  extraStoragePerGbMonthlyPrice: 60,
+  manualDocumentPrepPrice: 15000,
+  archiveProcessingPrice: 25000,
+  levelPrices: {
+    1: { setup: 7500, monthly: 0 },
+    2: { setup: 15000, monthly: 1800 },
+    3: { setup: 28000, monthly: 3500 },
+  },
+  products: [
+    {
+      id: 'prod-single',
+      type: 'single',
+      title: 'Один AI-агент',
+      subtitle: 'Фокусный виртуальный специалист',
+      description: 'Готовое внедрение одного ассистента под конкретный контур (SMM, методист, оператор поддержки).',
+      baseSetupPrice: 15000,
+      baseMonthlyPrice: 9900,
+      badge: 'Быстрый старт',
+      includedAdminCount: 1,
+      includedStorageGb: 5,
+      allowedFeatureIds: [
+        'ft-text-gen',
+        'ft-content-plan',
+        'ft-doc-search',
+        'ft-inbox-triage',
+        'ft-comments-reply',
+      ],
+    },
+    {
+      id: 'prod-bundle',
+      type: 'bundle',
+      title: 'Комплект AI-агентов',
+      subtitle: 'Связка из 2+ ассистентов с общей базой',
+      description: 'Комплексный отдел: агент контента + методист + аналитик с разграничением ролей и прав доступа.',
+      baseSetupPrice: 35000,
+      baseMonthlyPrice: 18900,
+      badge: 'Популярный выбор',
+      includedAdminCount: 1,
+      includedStorageGb: 20,
+      allowedFeatureIds: [
+        'ft-text-gen',
+        'ft-content-plan',
+        'ft-curriculum',
+        'ft-doc-search',
+        'ft-inbox-triage',
+        'ft-multi-agent',
+        'ft-comments-reply',
+        'ft-stats-collector',
+      ],
+    },
+    {
+      id: 'prod-custom',
+      type: 'custom',
+      title: 'Индивидуальное решение',
+      subtitle: 'Нестандартная архитектура и CRM',
+      description: 'Сложные цепочки согласований, изолированный контур, голосовые шлюзы и кастомные пайплайны.',
+      baseSetupPrice: 75000,
+      baseMonthlyPrice: 39000,
+      badge: 'Enterprise',
+      includedAdminCount: 1,
+      includedStorageGb: 50,
+      allowedFeatureIds: [
+        'ft-text-gen',
+        'ft-content-plan',
+        'ft-curriculum',
+        'ft-doc-search',
+        'ft-inbox-triage',
+        'ft-multi-agent',
+        'ft-comments-reply',
+        'ft-stats-collector',
+        'ft-custom-flow',
+      ],
+    },
+  ],
+  features: [
+    {
+      id: 'ft-text-gen',
+      title: 'Генерация текстов и ответов',
+      description: 'Быстрое создание драфтов, статей и клиентских ответов в согласованной тональности бренда (ToV).',
+      category: 'core',
+      setupPrice: 0,
+      monthlyPrice: 0,
+    },
+    {
+      id: 'ft-content-plan',
+      title: 'Создание контент-плана и рубрикатора',
+      description: 'Генерация недельных и месячных планов публикаций с гипотезами и хуками.',
+      category: 'publishing',
+      setupPrice: 3500,
+      monthlyPrice: 0,
+    },
+    {
+      id: 'ft-curriculum',
+      title: 'Подготовка учебных планов и заданий',
+      description: 'Методический анализ программ, генерация тестов, ДЗ и рубрик оценивания.',
+      category: 'core',
+      setupPrice: 5000,
+      monthlyPrice: 1200,
+    },
+    {
+      id: 'ft-doc-search',
+      title: 'Семантический поиск по документам',
+      description: 'RAG-система: поиск точных фактов внутри регламентов, PDF-файлов и инструкций.',
+      category: 'knowledge',
+      setupPrice: 6000,
+      monthlyPrice: 1500,
+    },
+    {
+      id: 'ft-inbox-triage',
+      title: 'Классификация и маршрутизация обращений',
+      description: 'Анализ намерений, определение приоритетов и тегирование заявок перед передачей.',
+      category: 'core',
+      setupPrice: 4000,
+      monthlyPrice: 900,
+    },
+    {
+      id: 'ft-comments-reply',
+      title: 'Работа с комментариями и реакциями',
+      description: 'Автономная или полуавтоматическая модерация сообществ в соцсетях.',
+      category: 'publishing',
+      setupPrice: 7000,
+      monthlyPrice: 2000,
+      isHardScenario: true,
+    },
+    {
+      id: 'ft-stats-collector',
+      title: 'Сбор статистики и аналитика реакций',
+      description: 'Еженедельные отчёты по вовлечённости и точности генераций в структурированном виде.',
+      category: 'publishing',
+      setupPrice: 5000,
+      monthlyPrice: 1500,
+    },
+    {
+      id: 'ft-multi-agent',
+      title: 'Командное взаимодействие (Multi-Agent)',
+      description: 'Сценарии, где один агент передает контекст задачи другому специализированному агенту.',
+      category: 'automation',
+      setupPrice: 12000,
+      monthlyPrice: 3500,
+    },
+    {
+      id: 'ft-custom-flow',
+      title: 'Сложные цепочки между системами',
+      description: 'Глубокая двусторонняя синхронизация со сложной кастомной бизнес-логикой.',
+      category: 'automation',
+      setupPrice: 0,
+      monthlyPrice: 0,
+      requiresIndividualEstimate: true,
+    },
+  ],
+  integrations: [
+    {
+      id: 'int-tg-bot',
+      title: 'Telegram Бот',
+      category: 'messenger',
+      level: 1,
+      description: 'Двустороннее общение через официальный Bot API.',
+      setupPrice: 7500,
+      monthlyPrice: 0,
+      hasReadyConnector: true,
+      requiresAccessGrant: false,
+    },
+    {
+      id: 'int-tg-channel',
+      title: 'Telegram Канал / Группа',
+      category: 'publishing',
+      level: 1,
+      description: 'Автоматическая публикация постов и медиа по расписанию.',
+      setupPrice: 7500,
+      monthlyPrice: 0,
+      hasReadyConnector: true,
+      requiresAccessGrant: true,
+    },
+    {
+      id: 'int-vk',
+      title: 'ВКонтакте (Сообщество)',
+      category: 'social',
+      level: 2,
+      description: 'Ответы в ЛС группы и отложенный постинг на стену.',
+      setupPrice: 15000,
+      monthlyPrice: 1800,
+      hasReadyConnector: true,
+      requiresAccessGrant: true,
+    },
+    {
+      id: 'int-wa-business',
+      title: 'WhatsApp Business API',
+      category: 'messenger',
+      level: 2,
+      description: 'Подключение через официального провайдера (WABA/Edna).',
+      setupPrice: 15000,
+      monthlyPrice: 1800,
+      hasReadyConnector: true,
+      requiresAccessGrant: true,
+      restrictionsNote: 'Требуется верифицированный профиль Meta Business',
+    },
+    {
+      id: 'int-email-smtp',
+      title: 'Корпоративная Почта (IMAP/SMTP)',
+      category: 'email',
+      level: 2,
+      description: 'Чтение входящих писем, черновики ответов и отправка.',
+      setupPrice: 15000,
+      monthlyPrice: 1800,
+      hasReadyConnector: true,
+      requiresAccessGrant: true,
+    },
+    {
+      id: 'int-crm-amocrm',
+      title: 'amoCRM / Bitrix24',
+      category: 'crm',
+      level: 3,
+      description: 'Создание сделок, фиксация диалога и заполнение кастомных полей.',
+      setupPrice: 28000,
+      monthlyPrice: 3500,
+      hasReadyConnector: true,
+      requiresAccessGrant: true,
+    },
+    {
+      id: 'int-custom-rest',
+      title: 'Индивидуальная CRM / ERP / 1С',
+      category: 'custom',
+      level: 'individual',
+      description: 'Разработка коннектора под самописный или закрытый REST/SOAP шлюз.',
+      setupPrice: 0,
+      monthlyPrice: 0,
+      hasReadyConnector: false,
+      requiresAccessGrant: true,
+      requiresIndividualEstimate: true,
+      restrictionsNote: 'Требуется предоставление Swagger / документации API',
+    },
+    {
+      id: 'int-telephony',
+      title: 'Телефония / Голосовые звонки',
+      category: 'custom',
+      level: 'individual',
+      description: 'Подключение SIP-транков, распознавание и синтез речи в реальном времени.',
+      setupPrice: 0,
+      monthlyPrice: 0,
+      hasReadyConnector: false,
+      requiresAccessGrant: true,
+      requiresIndividualEstimate: true,
+    },
+  ],
+}
+
+/**
+ * Получение актуального конфига с бэкенда с фолбэком на дефолтный автономный конфиг
+ */
+export async function loadPricingConfig(): Promise<PricingConfig> {
+  const base = import.meta.env.VITE_API_URL ?? '/api'
+  try {
+    const res = await fetch(`${base}/construct/pricing-config`)
+    if (res.ok) {
+      const data = await res.json()
+      return { ...defaultPricingConfig, ...data }
+    }
+  } catch {
+    // В офлайн-режиме используем дефолтные параметры
+  }
+  return defaultPricingConfig
+}
+</file>
+
+<file path="pages/Agents.tsx">
+import { useMemo, useState, type FormEvent } from 'react'
+import { Bot, MoreHorizontal, Plus, Search, Server } from 'lucide-react'
+import { api, type Agent, type Vm, type AgentPermission } from '../lib/api'
+import { PermissionBadge } from '../components/StatusBadge'
+
+export function Agents({agents,vms,userId,onCreated}:{agents:Agent[];vms:Vm[];userId?:number;onCreated:(agent:Agent)=>void}) {
+ const [q,setQ]=useState('')
+ const [open,setOpen]=useState(false)
+ const [name,setName]=useState('')
+ const [description,setDescription]=useState('')
+ const [permission,setPermission]=useState<AgentPermission>('analyst')
+ const [vmId,setVmId]=useState<number>(vms[0]?.id??0)
+ const [saving,setSaving]=useState(false)
+ const [formError,setFormError]=useState('')
+ const filtered=useMemo(()=>agents.filter(a=>(a.agent_name+' '+(a.agent_description??'')).toLowerCase().includes(q.toLowerCase())),[agents,q])
+ async function submit(e:FormEvent){e.preventDefault();if(!userId||!vmId||!name.trim())return;setSaving(true);setFormError('');try{const agent=await api.createAgent(userId,{agent_name:name.trim(),agent_description:description.trim()||null,agent_vm_id:vmId,agent_permission:permission});onCreated(agent);setOpen(false);setName('');setDescription('')}catch(err){setFormError(err instanceof Error?err.message:'Не удалось создать агента')}finally{setSaving(false)}}
+ return <div className="page-stack">
+  <div className="page-toolbar"><div><span className="section-label">AI TEAM / REGISTRY</span><h2>AI-агенты</h2><p>Единый реестр исполнителей и их зон ответственности.</p></div><button className="primary-button" onClick={()=>{setOpen(true);setFormError('')}}><Plus size={17}/> Новый агент</button></div>
+  <div className="filterbar"><div className="search"><Search size={16}/><input placeholder="Поиск по агентам" value={q} onChange={e=>setQ(e.target.value)}/></div><span className="result-count">{filtered.length} из {agents.length}</span></div>
+  <section className="table-panel"><div className="table-head"><span>АГЕНТ</span><span>РОЛЬ</span><span>VM</span><span>СОЗДАН</span><span/></div>{filtered.map(a=>{const vm=vms.find(v=>v.id===a.agent_vm_id);return <div className="table-row" key={a.id}><div className="identity"><div className="agent-avatar"><Bot size={18}/></div><div><strong>{a.agent_name}</strong><span>{a.agent_description||'—'}</span></div></div><PermissionBadge value={a.agent_permission}/><div className="muted"><Server size={14}/> {vm?.title??`VM #${a.agent_vm_id}`}</div><div className="muted">{new Date(a.created_at).toLocaleDateString('ru-RU')}</div><button className="icon-button ghost"><MoreHorizontal size={18}/></button></div>})}{!filtered.length&&<div className="empty-table"><Bot size={28}/><strong>Ничего не найдено</strong><span>Измените запрос или создайте первого агента.</span></div>}</section>
+  {open&&<div className="modal-backdrop" onMouseDown={e=>{if(e.currentTarget===e.target&&!saving)setOpen(false)}}><form className="modal" onSubmit={submit}><div className="modal-head"><div><span className="section-label">NEW AGENT</span><h3>Создать AI-агента</h3></div><button type="button" className="icon-button ghost" onClick={()=>setOpen(false)}>×</button></div><label>Название<input required value={name} onChange={e=>setName(e.target.value)} placeholder="Например, Аналитик контента"/></label><label>Описание<textarea value={description} onChange={e=>setDescription(e.target.value)} placeholder="Зона ответственности агента"/></label><div className="form-grid"><label>Роль<select value={permission} onChange={e=>setPermission(e.target.value as AgentPermission)}><option value="analyst">Аналитик</option><option value="methodologist">Методолог</option><option value="smm">SMM</option></select></label><label>VM<select required value={vmId} onChange={e=>setVmId(Number(e.target.value))}><option value={0} disabled>Выберите VM</option>{vms.map(v=><option key={v.id} value={v.id}>{v.title}</option>)}</select></label></div>{formError&&<div className="error-box">{formError}</div>}<div className="modal-actions"><button type="button" className="secondary-button" onClick={()=>setOpen(false)}>Отмена</button><button className="primary-button" disabled={saving||!userId||!vmId}>{saving?'Создание…':'Создать агента'}</button></div></form></div>}
+ </div>
+}
+</file>
+
+<file path="pages/ConstructorPage.tsx">
+import { useState, useEffect, useMemo, type FormEvent } from 'react'
+import {
+  defaultPricingConfig,
+  loadPricingConfig,
+} from '../lib/pricingConfig'
+import { calculatePrice } from '../lib/pricingCalculator'
+import type {
+  ConstructorState,
+  PricingConfig,
+  LeadSubmission,
+} from '../lib/constructorTypes'
+import {
+  CheckCircle2,
+  CircleAlert,
+  RefreshCw,
+} from '../components/Icons'
+
+const STORAGE_KEY = 'nova_constructor_state_v1'
+
+const initialDefaultState: ConstructorState = {
+  productId: 'prod-single',
+  featureIds: ['ft-text-gen', 'ft-doc-search'],
+  integrationIds: ['int-tg-bot'],
+  employeeCount: 2,
+  storageGb: 10,
+  manualDocProcessing: false,
+  customImport: false,
+  largeArchiveRecognition: false,
+  publishingAssistance: false,
+  aiPaymentMode: 'shared-balance',
+  clientComment: '',
+}
+
+const STEPS = [
+  { id: 1, title: 'Формат', label: 'Продукт' },
+  { id: 2, title: 'Функции', label: 'Возможности' },
+  { id: 3, title: 'Каналы', label: 'Интеграции' },
+  { id: 4, title: 'Ресурсы', label: 'Доступы & База' },
+  { id: 5, title: 'AI-бюджет', label: 'Финальный план' },
+]
+
+export function ConstructorPage({ onBackToHome }: { onBackToHome: () => void }) {
+  const [currentStep, setCurrentStep] = useState(1)
+  const [config, setConfig] = useState<PricingConfig>(defaultPricingConfig)
+
+  const [state, setState] = useState<ConstructorState>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      if (saved) return JSON.parse(saved)
+    } catch {}
+    return initialDefaultState
+  })
+
+  // Модальное окно лида / КП
+  const [leadModalOpen, setLeadModalOpen] = useState(false)
+  const [leadSuccess, setLeadSuccess] = useState(false)
+  const [leadSubmitting, setLeadSubmitting] = useState(false)
+  const [leadError, setLeadError] = useState('')
+  const [contactName, setContactName] = useState('')
+  const [contactPhone, setContactPhone] = useState('')
+  const [contactEmail, setContactEmail] = useState('')
+  const [companyName, setCompanyName] = useState('')
+  const [wantsKpDownload, setWantsKpDownload] = useState(true)
+
+  useEffect(() => {
+    loadPricingConfig().then(setConfig)
+  }, [])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+    } catch {}
+  }, [state])
+
+  const pricing = useMemo(() => calculatePrice(state, config), [state, config])
+  const selectedProduct = config.products.find(p => p.id === state.productId) ?? config.products[0]
+
+  const handleReset = () => {
+    if (window.confirm('Сбросить выбранные параметры к начальным значениям?')) {
+      setState(initialDefaultState)
+      setCurrentStep(1)
+      localStorage.removeItem(STORAGE_KEY)
+    }
+  }
+
+  const toggleFeature = (fid: string) => {
+    setState(prev => ({
+      ...prev,
+      featureIds: prev.featureIds.includes(fid)
+        ? prev.featureIds.filter(id => id !== fid)
+        : [...prev.featureIds, fid],
+    }))
+  }
+
+  const toggleIntegration = (iid: string) => {
+    setState(prev => ({
+      ...prev,
+      integrationIds: prev.integrationIds.includes(iid)
+        ? prev.integrationIds.filter(id => id !== iid)
+        : [...prev.integrationIds, iid],
+    }))
+  }
+
+  const handleLeadSubmit = async (e: FormEvent) => {
+    e.preventDefault()
+    setLeadError('')
+    setLeadSubmitting(true)
+
+    const payload: LeadSubmission = {
+      contactName,
+      contactPhone,
+      contactEmail,
+      companyName,
+      wantsKpDownload,
+      state,
+      pricingSummary: pricing,
+    }
+
+    try {
+      const base = import.meta.env.VITE_API_URL ?? '/api'
+      const res = await fetch(`${base}/construct/leads`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).catch(() => null)
+
+      if (res && !res.ok) {
+        throw new Error('Не удалось отправить заявку. Попробуйте еще раз.')
+      }
+
+      setLeadSuccess(true)
+    } catch (err) {
+      setLeadError(err instanceof Error ? err.message : 'Ошибка отправки')
+    } finally {
+      setLeadSubmitting(false)
+    }
+  }
+
+  return (
+    <div className="constructor-page">
+      {/* Шапка */}
+      <header className="construct-header">
+        <div className="construct-header-left">
+          <button className="back-link-btn" onClick={onBackToHome}>
+            ← На главную
+          </button>
+          <div>
+            <div className="construct-eyebrow">NOVA / STEP-BY-STEP BUILDER</div>
+            <h1 className="construct-title">Конструктор AI-сервисов</h1>
+          </div>
+        </div>
+
+        <div className="construct-header-actions">
+          <button className="secondary-button" onClick={handleReset} title="Сбросить конфигурацию">
+            <RefreshCw size={15} /> Сбросить
+          </button>
+          <button className="primary-button gold-btn" onClick={() => setLeadModalOpen(true)}>
+            Оформить заявку / КП
+          </button>
+        </div>
+      </header>
+
+      {/* Полоса шагов (Wizard Stepper) */}
+      <div className="wizard-stepper">
+        {STEPS.map(s => {
+          const isActive = currentStep === s.id
+          const isPassed = currentStep > s.id
+          return (
+            <div
+              key={s.id}
+              className={`wizard-step-item ${isActive ? 'active' : ''} ${isPassed ? 'passed' : ''}`}
+              onClick={() => setCurrentStep(s.id)}
+            >
+              <div className="wizard-step-badge">{isPassed ? '✓' : `0${s.id}`}</div>
+              <div className="wizard-step-text">
+                <span className="step-label">{s.title}</span>
+                <strong className="step-name">{s.label}</strong>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Основная сетка: активный шаг слева + плавающий Sidebar справа */}
+      <div className="construct-layout">
+        <div className="construct-main">
+          {/* ШАГ 1: ВЫБОР ПРОДУКТА */}
+          {currentStep === 1 && (
+            <section className="calc-section">
+              <div className="calc-section-head">
+                <span className="step-num">01</span>
+                <div>
+                  <h2>Формат и тип решения</h2>
+                  <p>Выберите архитектуру под масштаб задач вашей команды.</p>
+                </div>
+              </div>
+
+              <div className="product-cards-grid">
+                {config.products.map(prod => {
+                  const isSelected = prod.id === state.productId
+                  return (
+                    <div
+                      key={prod.id}
+                      className={`product-select-card ${isSelected ? 'active' : ''}`}
+                      onClick={() => setState(s => ({ ...s, productId: prod.id }))}
+                    >
+                      {prod.badge && <span className="product-badge">{prod.badge}</span>}
+                      <div className="prod-title">{prod.title}</div>
+                      <div className="prod-sub">{prod.subtitle}</div>
+                      <div className="prod-desc">{prod.description}</div>
+                      <div className="prod-prices">
+                        <div className="prod-price-item">
+                          <span>Запуск</span>
+                          <strong>{prod.baseSetupPrice.toLocaleString('ru-RU')} ₽</strong>
+                        </div>
+                        <div className="prod-price-item">
+                          <span>Поддержка</span>
+                          <strong>{prod.baseMonthlyPrice.toLocaleString('ru-RU')} ₽/мес</strong>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* ШАГ 2: ФУНКЦИОНАЛЬНОСТЬ */}
+          {currentStep === 2 && (
+            <section className="calc-section">
+              <div className="calc-section-head">
+                <span className="step-num">02</span>
+                <div>
+                  <h2>Функциональные возможности</h2>
+                  <p>Выберите базовые и специализированные алгоритмы работы ассистента.</p>
+                </div>
+              </div>
+
+              <div className="options-grid">
+                {config.features.map(feat => {
+                  const isChecked = state.featureIds.includes(feat.id)
+                  const isAllowed = selectedProduct.allowedFeatureIds.includes(feat.id)
+
+                  return (
+                    <label
+                      key={feat.id}
+                      className={`option-check-card ${isChecked ? 'checked' : ''} ${!isAllowed ? 'disabled' : ''}`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        disabled={!isAllowed}
+                        onChange={() => toggleFeature(feat.id)}
+                      />
+                      <div className="check-card-body">
+                        <div className="check-card-title">
+                          <strong>{feat.title}</strong>
+                          {feat.requiresIndividualEstimate && (
+                            <span className="pill-individual">Индивидуально</span>
+                          )}
+                          {feat.isHardScenario && (
+                            <span className="pill-hard">Сложный сценарий</span>
+                          )}
+                        </div>
+                        <p>{feat.description}</p>
+                        <div className="check-card-meta">
+                          {feat.setupPrice > 0 && (
+                            <span>+ {feat.setupPrice.toLocaleString('ru-RU')} ₽ запуск</span>
+                          )}
+                          {feat.monthlyPrice > 0 && (
+                            <span>+ {feat.monthlyPrice.toLocaleString('ru-RU')} ₽/мес</span>
+                          )}
+                          {!isAllowed && <span className="warning-text">Недоступно в этом тарифе</span>}
+                        </div>
+                      </div>
+                    </label>
+                  )
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* ШАГ 3: ИНТЕГРАЦИИ */}
+          {currentStep === 3 && (
+            <section className="calc-section">
+              <div className="calc-section-head">
+                <span className="step-num">03</span>
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <h2>Каналы связи и интеграции</h2>
+                    <span className="count-pill">{state.integrationIds.length} выбрано</span>
+                  </div>
+                  <p>
+                    Каждая точка подключения рассчитывается отдельно. Выбор более {config.maxAutoIntegrationsThreshold} интеграций
+                    переводит проект в индивидуальный расчёт архитектуры.
+                  </p>
+                </div>
+              </div>
+
+              <div className="integrations-list">
+                {config.integrations.map(integ => {
+                  const isChecked = state.integrationIds.includes(integ.id)
+                  const isIndividual = integ.level === 'individual' || integ.requiresIndividualEstimate
+
+                  return (
+                    <div
+                      key={integ.id}
+                      className={`integration-row ${isChecked ? 'active' : ''}`}
+                      onClick={() => toggleIntegration(integ.id)}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => {}}
+                      />
+                      <div className="integ-info">
+                        <div className="integ-top">
+                          <strong>{integ.title}</strong>
+                          <span className={`level-tag level-${integ.level}`}>
+                            {typeof integ.level === 'number' ? `Уровень ${integ.level}` : 'Индивидуально'}
+                          </span>
+                          {integ.hasReadyConnector ? (
+                            <span className="connector-tag">Готовый коннектор</span>
+                          ) : (
+                            <span className="connector-tag custom">Кастомная разработка</span>
+                          )}
+                        </div>
+                        <p>{integ.description}</p>
+                        {integ.restrictionsNote && (
+                          <div className="integ-restriction">Ограничение: {integ.restrictionsNote}</div>
+                        )}
+                      </div>
+
+                      <div className="integ-pricing">
+                        {isIndividual ? (
+                          <span className="pill-individual">Индивидуальный расчет</span>
+                        ) : (
+                          <>
+                            <div className="setup-cost">{integ.setupPrice.toLocaleString('ru-RU')} ₽ запуск</div>
+                            {integ.monthlyPrice > 0 ? (
+                              <div className="monthly-cost">+{integ.monthlyPrice.toLocaleString('ru-RU')} ₽/мес</div>
+                            ) : (
+                              <div className="monthly-cost free">0 ₽/мес</div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </section>
+          )}
+
+          {/* ШАГ 4: СОТРУДНИКИ И ХРАНИЛИЩЕ */}
+          {currentStep === 4 && (
+            <section className="calc-section">
+              <div className="calc-section-head">
+                <span className="step-num">04</span>
+                <div>
+                  <h2>Команда, права доступа и база знаний</h2>
+                  <p>Рабочие места сотрудников, файлы документов и правила импорта данных.</p>
+                </div>
+              </div>
+
+              {/* Сотрудники */}
+              <div className="counter-box" style={{ marginBottom: '20px' }}>
+                <div className="counter-info">
+                  <strong>Рабочие места сотрудников</strong>
+                  <p>
+                    1 администратор включен. Дополнительные сотрудники: +{config.extraEmployeeMonthlyPrice.toLocaleString('ru-RU')} ₽/мес за место.
+                  </p>
+                </div>
+                <div className="stepper">
+                  <button
+                    type="button"
+                    className="step-btn"
+                    disabled={state.employeeCount <= 1}
+                    onClick={() => setState(s => ({ ...s, employeeCount: Math.max(1, s.employeeCount - 1) }))}
+                  >
+                    -
+                  </button>
+                  <span className="step-value">{state.employeeCount}</span>
+                  <button
+                    type="button"
+                    className="step-btn"
+                    onClick={() => setState(s => ({ ...s, employeeCount: s.employeeCount + 1 }))}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* Слайдер объема */}
+              <div className="slider-box">
+                <div className="slider-header">
+                  <div>
+                    <strong>Объём выделенного хранилища документов</strong>
+                    <p>В тарифе: {selectedProduct.includedStorageGb} GB. Сверх лимита: {config.extraStoragePerGbMonthlyPrice} ₽/GB в месяц.</p>
+                  </div>
+                  <div className="slider-indicator">{state.storageGb} GB</div>
+                </div>
+                <input
+                  type="range"
+                  min="5"
+                  max="250"
+                  step="5"
+                  value={state.storageGb}
+                  onChange={e => setState(s => ({ ...s, storageGb: Number(e.target.value) }))}
+                  className="gold-range"
+                />
+              </div>
+
+              {/* Чекбоксы импорта */}
+              <div className="knowledge-options">
+                <label className="checkbox-tile highlight-tile">
+                  <input
+                    type="checkbox"
+                    checked={state.customImport}
+                    onChange={e => setState(s => ({ ...s, customImport: e.target.checked }))}
+                  />
+                  <div>
+                    <div className="tile-title">
+                      <strong>Нестандартный импорт данных</strong>
+                      <span className="pill-individual">Индивидуальный расчет</span>
+                    </div>
+                    <p>Импорт из закрытых СУБД, устаревших систем или неструктурированных архивов.</p>
+                  </div>
+                </label>
+
+                <label className="checkbox-tile">
+                  <input
+                    type="checkbox"
+                    checked={state.manualDocProcessing}
+                    onChange={e => setState(s => ({ ...s, manualDocProcessing: e.target.checked }))}
+                  />
+                  <div>
+                    <div className="tile-title">
+                      <strong>Ручная подготовка и очистка документов методистом</strong>
+                      <span>+{config.manualDocumentPrepPrice.toLocaleString('ru-RU')} ₽ запуск</span>
+                    </div>
+                    <p>Профессиональная разметка и чистка шумов в регламентах перед загрузкой в RAG.</p>
+                  </div>
+                </label>
+
+                <label className="checkbox-tile">
+                  <input
+                    type="checkbox"
+                    checked={state.largeArchiveRecognition}
+                    onChange={e => setState(s => ({ ...s, largeArchiveRecognition: e.target.checked }))}
+                  />
+                  <div>
+                    <div className="tile-title">
+                      <strong>Распознавание больших архивов и сканов (OCR)</strong>
+                      <span>+{config.archiveProcessingPrice.toLocaleString('ru-RU')} ₽ запуск</span>
+                    </div>
+                    <p>Потоковая обработка отсканированных PDF, таблиц и документов.</p>
+                  </div>
+                </label>
+              </div>
+            </section>
+          )}
+
+          {/* ШАГ 5: AI-БЮДЖЕТ */}
+          {currentStep === 5 && (
+            <section className="calc-section">
+              <div className="calc-section-head">
+                <span className="step-num">05</span>
+                <div>
+                  <h2>AI-бюджет и финализация заявки</h2>
+                  <p>Выберите модель оплаты токенов нейросетей перед отправкой заявки.</p>
+                </div>
+              </div>
+
+              <div className="ai-modes-grid">
+                <label className={`ai-mode-card ${state.aiPaymentMode === 'shared-balance' ? 'active' : ''}`}>
+                  <input
+                    type="radio"
+                    name="ai_mode"
+                    value="shared-balance"
+                    checked={state.aiPaymentMode === 'shared-balance'}
+                    onChange={() => setState(s => ({ ...s, aiPaymentMode: 'shared-balance' }))}
+                  />
+                  <div>
+                    <strong>Единый баланс Nova</strong>
+                    <p>Мы берем на себя шлюзы LLM, мониторинг и выставляем закрывающие документы по факту.</p>
+                  </div>
+                </label>
+
+                <label className={`ai-mode-card ${state.aiPaymentMode === 'own-account' ? 'active' : ''}`}>
+                  <input
+                    type="radio"
+                    name="ai_mode"
+                    value="own-account"
+                    checked={state.aiPaymentMode === 'own-account'}
+                    onChange={() => setState(s => ({ ...s, aiPaymentMode: 'own-account' }))}
+                  />
+                  <div>
+                    <strong>Свой API-ключ</strong>
+                    <p>Прямой расчёт с поставщиками (OpenAI, Anthropic). Комиссия Nova за токены: 0%.</p>
+                  </div>
+                </label>
+
+                <label className={`ai-mode-card ${state.aiPaymentMode === 'later' ? 'active' : ''}`}>
+                  <input
+                    type="radio"
+                    name="ai_mode"
+                    value="later"
+                    checked={state.aiPaymentMode === 'later'}
+                    onChange={() => setState(s => ({ ...s, aiPaymentMode: 'later' }))}
+                  />
+                  <div>
+                    <strong>Уточнить позже</strong>
+                    <p>Выбрать модель и схему оплат в процессе технического брифинга.</p>
+                  </div>
+                </label>
+              </div>
+
+              <div className="notice-box">
+                <CircleAlert size={18} />
+                <span>
+                  Точный расход AI зависит от длины промптов, размера вложенных файлов и частоты обращений сотрудников.
+                </span>
+              </div>
+            </section>
+          )}
+
+          {/* Нижняя панель навигации (Назад / Далее) */}
+          <div className="wizard-controls">
+            <button
+              type="button"
+              className="secondary-button"
+              disabled={currentStep === 1}
+              onClick={() => setCurrentStep(prev => Math.max(1, prev - 1))}
+            >
+              ← Назад
+            </button>
+
+            {currentStep < 5 ? (
+              <button
+                type="button"
+                className="primary-button gold-btn"
+                onClick={() => setCurrentStep(prev => Math.min(5, prev + 1))}
+              >
+                Далее →
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="primary-button gold-btn"
+                onClick={() => setLeadModalOpen(true)}
+              >
+                Оформить заявку / КП
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* ПРАВАЯ ПАНЕЛЬ: Sticky Summary */}
+        <aside className="construct-sidebar">
+          <div className="summary-sticky-card">
+            <div className="summary-head">
+              <span className="summary-label">ИТОГОВАЯ КОНФИГУРАЦИЯ</span>
+              <h3>Сводка расчёта</h3>
+            </div>
+
+            <div className="summary-product">
+              <span className="prod-chip">{selectedProduct.title}</span>
+              <p>{selectedProduct.subtitle}</p>
+            </div>
+
+            {pricing.requiresIndividualEstimate ? (
+              <div className="individual-alert-panel">
+                <div className="alert-head">
+                  <CircleAlert size={18} />
+                  <strong>Требуется индивидуальная оценка</strong>
+                </div>
+                <p>
+                  Для данной конфигурации автоматический расчёт приостановлен. Оставьте заявку, чтобы получить персональную оценку.
+                </p>
+                <div className="reasons-list">
+                  {pricing.estimateReasons.map((reason, idx) => (
+                    <div key={idx} className="reason-item">• {reason}</div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="summary-figures">
+                <div className="price-row main-price">
+                  <div>
+                    <span>Разовый запуск</span>
+                    <small>Настройка и коннекторы</small>
+                  </div>
+                  <strong>{pricing.setupPrice?.toLocaleString('ru-RU')} ₽</strong>
+                </div>
+
+                <div className="price-row main-price">
+                  <div>
+                    <span>Ежемесячно</span>
+                    <small>Поддержка, места, серверы</small>
+                  </div>
+                  <strong className="gold-text">
+                    {pricing.monthlyPrice?.toLocaleString('ru-RU')} ₽/мес
+                  </strong>
+                </div>
+
+                {pricing.aiBudgetEstimateMonthly !== null && (
+                  <div className="price-row ai-row">
+                    <div>
+                      <span>Ориентир AI-бюджета</span>
+                      <small>Токены (по факту)</small>
+                    </div>
+                    <span>~{pricing.aiBudgetEstimateMonthly?.toLocaleString('ru-RU')} ₽/мес</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="summary-breakdown">
+              <div className="breakdown-title">Параметры комплекта:</div>
+              <ul className="breakdown-list">
+                <li>
+                  <span>Интеграции</span>
+                  <strong>{state.integrationIds.length} шт.</strong>
+                </li>
+                <li>
+                  <span>Сотрудники</span>
+                  <strong>{state.employeeCount} чел.</strong>
+                </li>
+                <li>
+                  <span>Хранилище</span>
+                  <strong>{state.storageGb} GB</strong>
+                </li>
+                {state.manualDocProcessing && <li><span>Ручная подготовка</span><strong>Да</strong></li>}
+                {state.customImport && <li><span className="gold-text">Нестандартный импорт</span><strong>Да</strong></li>}
+              </ul>
+            </div>
+
+            <div className="summary-actions">
+              <button
+                className="btn-primary-gold full-width"
+                onClick={() => setLeadModalOpen(true)}
+              >
+                {pricing.requiresIndividualEstimate
+                  ? 'Запросить индивидуальный расчёт'
+                  : 'Получить КП / Оставить заявку'}
+              </button>
+              <button className="reset-link" onClick={handleReset}>
+                Сбросить параметры
+              </button>
+            </div>
+
+            <div className="disclaimer-text">
+              * Предварительный расчёт не является публичной офертой. Окончательные параметры фиксируются в техническом задании.
+            </div>
+          </div>
+        </aside>
+      </div>
+
+      {/* МОДАЛЬНОЕ ОКНО ЗАЯВКИ (ИСПРАВЛЕНО ОТОБРАЖЕНИЕ) */}
+      {leadModalOpen && (
+        <div
+          className="modal-backdrop"
+          onMouseDown={e => {
+            if (e.currentTarget === e.target && !leadSubmitting) {
+              setLeadModalOpen(false)
+            }
+          }}
+        >
+          <div className="modal lead-modal">
+            <div className="modal-head">
+              <div>
+                <span className="section-label">NOVA / COMMERCIAL PROPOSAL</span>
+                <h3>Оформление заявки</h3>
+                <p>Менеджер зафиксирует конфигурацию и направит детальное КП с расчётом сроков запуска.</p>
+              </div>
+              <button
+                type="button"
+                className="icon-button ghost"
+                onClick={() => setLeadModalOpen(false)}
+              >
+                ×
+              </button>
+            </div>
+
+            {leadSuccess ? (
+              <div className="lead-success-box">
+                <CheckCircle2 size={40} color="var(--accent-gold)" />
+                <h4>Заявка успешно принята!</h4>
+                <p>
+                  Мы зафиксировали конфигурацию для <strong>{contactEmail || contactPhone}</strong>. Наш AI-архитектор свяжется с вами в течение 30 минут.
+                </p>
+                <button
+                  className="primary-button gold-btn"
+                  onClick={() => {
+                    setLeadSuccess(false)
+                    setLeadModalOpen(false)
+                  }}
+                >
+                  Вернуться в конструктор
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleLeadSubmit} className="lead-form">
+                <div className="form-grid">
+                  <label className="field-group">
+                    <span className="field-label">Ваше имя *</span>
+                    <input
+                      className="form-input"
+                      required
+                      placeholder="Алексей"
+                      value={contactName}
+                      onChange={e => setContactName(e.target.value)}
+                    />
+                  </label>
+                  <label className="field-group">
+                    <span className="field-label">Телефон / Telegram *</span>
+                    <input
+                      className="form-input"
+                      required
+                      placeholder="+7 (999) 000-00-00"
+                      value={contactPhone}
+                      onChange={e => setContactPhone(e.target.value)}
+                    />
+                  </label>
+                </div>
+
+                <div className="form-grid">
+                  <label className="field-group">
+                    <span className="field-label">Рабочий Email *</span>
+                    <input
+                      className="form-input"
+                      type="email"
+                      required
+                      placeholder="alex@company.ru"
+                      value={contactEmail}
+                      onChange={e => setContactEmail(e.target.value)}
+                    />
+                  </label>
+                  <label className="field-group">
+                    <span className="field-label">Компания / Проект</span>
+                    <input
+                      className="form-input"
+                      placeholder="ООО НОВА"
+                      value={companyName}
+                      onChange={e => setCompanyName(e.target.value)}
+                    />
+                  </label>
+                </div>
+
+                <label className="field-group full-width-field">
+                  <span className="field-label">Комментарий или особые пожелания</span>
+                  <textarea
+                    className="form-textarea"
+                    rows={3}
+                    placeholder="Укажите специфику ваших баз данных, CRM или регламентов..."
+                    value={state.clientComment}
+                    onChange={e => setState(s => ({ ...s, clientComment: e.target.value }))}
+                  />
+                </label>
+
+                <label className="checkbox-kp">
+                  <input
+                    type="checkbox"
+                    checked={wantsKpDownload}
+                    onChange={e => setWantsKpDownload(e.target.checked)}
+                  />
+                  <span>Сформировать PDF коммерческого предложения с расшифровкой</span>
+                </label>
+
+                {pricing.requiresIndividualEstimate && (
+                  <div className="warning-note">
+                    Внимание: конфигурация включает опции с индивидуальной оценкой. Мы свяжемся для проведения технического аудита.
+                  </div>
+                )}
+
+                {leadError && <div className="error-box">{leadError}</div>}
+
+                <div className="modal-actions">
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    onClick={() => setLeadModalOpen(false)}
+                  >
+                    Отмена
+                  </button>
+                  <button
+                    type="submit"
+                    className="primary-button gold-btn"
+                    disabled={leadSubmitting}
+                  >
+                    {leadSubmitting ? 'Отправка...' : 'Отправить конфигурацию'}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+</file>
+
+<file path="pages/Infrastructure.tsx">
+import { useMemo, useState, type FormEvent } from 'react'
+import { Boxes, Cpu, Database, Plus, Search, Server } from 'lucide-react'
+import type { Vm } from '../lib/api'
+import { api } from '../lib/api'
+import { StatusBadge } from '../components/StatusBadge'
+
+export function Infrastructure({vms,onCreated}:{vms:Vm[];onCreated:(vm:Vm)=>void}) {
+ const [q,setQ]=useState(''); const [filter,setFilter]=useState<'all'|'ACTIVE'|'CREATING'|'RESTARTING'|'DISABLED'|'ERROR'>('all')
+ const [open,setOpen]=useState(false); const [saving,setSaving]=useState(false); const [error,setError]=useState('')
+ const [title,setTitle]=useState(''); const [description,setDescription]=useState(''); const [cores,setCores]=useState(2); const [ram,setRam]=useState(4096); const [rom,setRom]=useState(40); const [ostype,setOstype]=useState(1)
+ const filtered=useMemo(()=>vms.filter(v=>(filter==='all'||v.status===filter)&&v.title.toLowerCase().includes(q.toLowerCase())),[vms,q,filter])
+ function reset(){setTitle('');setDescription('');setCores(2);setRam(4096);setRom(40);setOstype(1);setError('')}
+ async function submit(e:FormEvent){e.preventDefault();setSaving(true);setError('');try{const vm=await api.createVm({title:title.trim(),description:description.trim()||null,cores,ram,rom,ostype});onCreated(vm);setOpen(false);reset()}catch(err){setError(err instanceof Error?err.message:'Не удалось создать VM')}finally{setSaving(false)}}
+ return <div className="page-stack">
+  <div className="page-toolbar"><div><span className="section-label">INFRASTRUCTURE / PROXMOX</span><h2>Виртуальные машины</h2><p>Состояние вычислительной инфраструктуры AI-команды.</p></div><button className="primary-button" onClick={()=>{setOpen(true);setError('')}}><Plus size={17}/> Создать VM</button></div>
+  <div className="filterbar"><div className="search"><Search size={16}/><input placeholder="Поиск VM" value={q} onChange={e=>setQ(e.target.value)}/></div><div className="segmented">{[['all','Все'],['ACTIVE','Активные'],['CREATING','Создание'],['ERROR','Ошибки']].map(([k,l])=><button className={filter===k?'selected':''} key={k} onClick={()=>setFilter(k as typeof filter)}>{l}</button>)}</div></div>
+  <div className="vm-cards">{filtered.map(v=><article className="vm-card" key={v.id}><div className="vm-card-top"><div className="vm-symbol"><Boxes size={19}/></div><StatusBadge status={v.status}/></div><h3>{v.title}</h3><p>{v.description||'Описание не задано'}</p><div className="vm-specs"><span><Cpu size={14}/>{v.cores} CPU</span><span><Database size={14}/>{v.ram} MB</span><span><Server size={14}/>{v.rom} GB</span></div><div className="vm-footer"><span>{v.ipv4||'IP не назначен'}</span><code>#{v.vm_proxmox_id}</code></div></article>)}{!filtered.length&&<div className="empty-table"><Boxes size={28}/><strong>VM не найдены</strong><span>API не вернуло виртуальные машины с выбранным фильтром.</span></div>}</div>
+  {open&&<div className="modal-backdrop" onMouseDown={e=>{if(e.currentTarget===e.target&&!saving)setOpen(false)}}><form className="modal wide-modal" onSubmit={submit}><div className="modal-head"><div><span className="section-label">PROXMOX / NEW VM</span><h3>Создать виртуальную машину</h3><p>VM будет создана в Proxmox и сохранена в реестре Nova.</p></div><button type="button" className="icon-button ghost" onClick={()=>setOpen(false)}>×</button></div><label>Название<input required value={title} onChange={e=>setTitle(e.target.value)} placeholder="Например, smm-agent-01"/></label><label>Описание<textarea value={description} onChange={e=>setDescription(e.target.value)} placeholder="Назначение виртуальной машины"/></label><div className="form-grid"><label>CPU cores<input type="number" min="1" value={cores} onChange={e=>setCores(Number(e.target.value))}/></label><label>RAM, MB<input type="number" min="512" step="512" value={ram} onChange={e=>setRam(Number(e.target.value))}/></label><label>Диск, GB<input type="number" min="8" value={rom} onChange={e=>setRom(Number(e.target.value))}/></label><label>OS type<input type="number" min="1" value={ostype} onChange={e=>setOstype(Number(e.target.value))}/></label></div>{error&&<div className="error-box">{error}</div>}<div className="modal-actions"><button type="button" className="secondary-button" onClick={()=>setOpen(false)}>Отмена</button><button className="primary-button" disabled={saving}>{saving?'Создание…':'Создать VM'}</button></div></form></div>}
+ </div>
+}
+</file>
+
+<file path="pages/Journal.tsx">
+import { useEffect, useState } from 'react'
+import { Activity, Clock3, MessageSquareText } from '../components/Icons'
+import { api, type Backlog, type Vm } from '../lib/api'
+export function Journal({vms}:{vms:Vm[]}) { const [selected,setSelected]=useState<number|null>(vms[0]?.id??null); const [items,setItems]=useState<Backlog[]>([]); const [error,setError]=useState(''); useEffect(()=>{ if(selected===null){setItems([]);return}; setError(''); api.connections(selected).then(setItems).catch(e=>setError(e.message)) },[selected]); return <div className="page-stack"><div className="page-toolbar"><div><span className="section-label">AUDIT / CONNECTIONS</span><h2>Журнал подключений</h2><p>История взаимодействия сотрудников с виртуальными машинами.</p></div></div><div className="journal-layout"><section className="panel vm-picker"><div className="panel-head"><h3>Виртуальные машины</h3></div>{vms.map(v=><button className={selected===v.id?'picker active':''} key={v.id} onClick={()=>setSelected(v.id)}><div className="vm-symbol"><Activity size={16}/></div><div><strong>{v.title}</strong><span>{v.ipv4||'без IP'}</span></div></button>)}{!vms.length&&<div className="panel-empty"><p>Нет VM для просмотра.</p></div>}</section><section className="panel"><div className="panel-head"><div><span className="section-label">EVENT STREAM</span><h3>{vms.find(v=>v.id===selected)?.title??'Выберите VM'}</h3></div><span className="result-count">{items.length} событий</span></div>{error?<div className="error-box">Не удалось загрузить журнал: {error}</div>:items.length?<div className="timeline">{items.map(i=><div className="event" key={i.id}><div className="event-dot"/><div><strong>{i.message}</strong><span><Clock3 size={13}/>{new Date(i.created_at).toLocaleString('ru-RU')} · сотрудник #{i.staff_id}</span></div></div>)}</div>:<div className="panel-empty"><MessageSquareText size={25}/><p>Для этой VM пока нет записей.</p></div>}</section></div></div> }
+</file>
+
+<file path="pages/LandingPage.tsx">
+import { useState, useEffect } from 'react'
+import {
+  NovaLogo,
+  NovaBeaconOrbit,
+} from '../components/NovaLogo'
+import {
+  Search,
+  Calculator,
+  Cpu,
+  ArrowRight,
+  Sun,
+  Moon,
+  ChevronDown,
+  ExternalLink,
+} from 'lucide-react'
+
+interface LandingPageProps {
+  onStartBuilder: () => void
+}
+
+export function LandingPage({ onStartBuilder }: LandingPageProps) {
+  // Поддержка переключения светлой и тёмной темы
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    return (localStorage.getItem('nova_theme') as 'dark' | 'light') || 'dark'
+  })
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('nova_theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'))
+  }
+
+  return (
+    <div className={`landing-cinematic ${theme === 'dark' ? 'theme-dark' : 'theme-light'}`}>
+      {/* ================= ХЕДЕР САЙТА (КАК НА СКРИНШОТЕ) ================= */}
+      <header className="cinematic-header">
+        <div className="header-brand">
+          <NovaLogo size={26} />
+        </div>
+
+        <nav className="header-nav">
+          <a href="#hero" className="active">Главная</a>
+          <a href="#solutions">Решения</a>
+          <a href="#about">О нас</a>
+          <a href="#team">Команда</a>
+          <a href="#projects">Проекты</a>
+        </nav>
+
+        <div className="header-actions">
+          {/* Переключатель языка */}
+          <div className="lang-switcher">
+            <span>RU</span>
+            <ChevronDown size={14} />
+          </div>
+
+          {/* Переключатель темы (День/Ночь) */}
+          <button
+            className="theme-toggle-btn"
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
+          >
+            {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+          </button>
+
+          {/* Кнопка в Telegram */}
+          <a
+            href="https://t.me"
+            target="_blank"
+            rel="noreferrer"
+            className="btn-telegram-outline"
+          >
+            <span>Написать в Telegram</span>
+            <ExternalLink size={14} />
+          </a>
+        </div>
+      </header>
+
+      {/* ================= HERO СЕКЦИЯ С КРИВИЗНОЙ ПЛАНЕТЫ ================= */}
+      <section id="hero" className="cinematic-hero">
+        {/* Фоновые звёзды и кривизна горизонта планеты */}
+        <div className="space-particles" />
+        <div className="planet-horizon-curve" />
+
+        <div className="hero-content-grid">
+          {/* Левая колонка с текстом */}
+          <div className="hero-text-block">
+            <span className="hero-kicker-caps">ЭКОСИСТЕМА AI-АВТОМАТИЗАЦИИ</span>
+
+            <h1 className="hero-giant-title">
+              NOVA <span className="gold-letter">A</span>I
+            </h1>
+
+            <h2 className="hero-subheading">
+              Автоматизируем бизнес-процессы с помощью AI
+            </h2>
+
+            <p className="hero-description">
+              Находим ручную работу, рассчитываем потенциальный эффект и внедряем решения, которые экономят время и сокращают рутину.
+            </p>
+
+            <div className="hero-actions-row">
+              {/* Главная кнопка: "Собрать конфигурацию" (заменяет бесплатный аудит) */}
+              <button className="btn-hero-primary-gold" onClick={onStartBuilder}>
+                <span>Собрать конфигурацию</span>
+                <span className="btn-icon">↗</span>
+              </button>
+
+              <a href="#products" className="btn-hero-link-arrow">
+                <span>Продукты</span>
+                <ArrowRight size={17} />
+              </a>
+            </div>
+          </div>
+
+          {/* Правая колонка: Светящаяся звезда-маяк с орбитой */}
+          <div className="hero-visual-block">
+            <div className="beacon-wrapper">
+              <NovaBeaconOrbit size={480} />
+            </div>
+          </div>
+        </div>
+
+        {/* ================= НИЖНЯЯ ПАНЕЛЬ ИЗ ТРЕХ КОЛОНОК (КАК НА СКРИНШОТЕ) ================= */}
+        <div className="hero-ticker-bar">
+          <div className="ticker-item">
+            <div className="ticker-icon">
+              <Search size={22} />
+            </div>
+            <div className="ticker-text">
+              <strong>Найти</strong>
+              <p>Ручную работу, повторы и узкие места</p>
+            </div>
+          </div>
+
+          <div className="ticker-item">
+            <div className="ticker-icon">
+              <Calculator size={22} />
+            </div>
+            <div className="ticker-text">
+              <strong>Посчитать</strong>
+              <p>Экономию времени, денег и ROI на ваших данных</p>
+            </div>
+          </div>
+
+          <div className="ticker-item">
+            <div className="ticker-icon">
+              <Cpu size={22} />
+            </div>
+            <div className="ticker-text">
+              <strong>Автоматизировать</strong>
+              <p>Готовым SaaS или решением под ваш процесс</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================= СЕКЦИЯ ПРОДУКТОВ ================= */}
+      <section id="products" className="landing-section">
+        <div className="section-head-center">
+          <span className="hero-kicker-caps">ГОТОВЫЕ ФОРМАТЫ</span>
+          <h2>Выберите решение для запуска</h2>
+          <p>Каждый продукт настраивается в интерактивном конструкторе с расчётом стоимости.</p>
+        </div>
+
+        <div className="cards-grid">
+          <div className="landing-card">
+            <div>
+              <span className="card-badge">Single Agent</span>
+              <h3>Один AI-агент</h3>
+              <p>Готовый виртуальный сотрудник под одну роль: SMM-ассистент, методист или оператор первой линии.</p>
+            </div>
+            <div className="card-bottom">
+              <div className="card-price">от 15 000 ₽</div>
+              <button className="btn-card-gold" onClick={onStartBuilder}>
+                Собрать в конструкторе
+              </button>
+            </div>
+          </div>
+
+          <div className="landing-card featured">
+            <div>
+              <span className="card-badge featured">Team Bundle</span>
+              <h3>Комплект AI-агентов</h3>
+              <p>Связка из 2+ ассистентов с распределением зон ответственности и общей базой знаний организации.</p>
+            </div>
+            <div className="card-bottom">
+              <div className="card-price">от 35 000 ₽</div>
+              <button className="btn-card-gold" onClick={onStartBuilder}>
+                Собрать в конструкторе
+              </button>
+            </div>
+          </div>
+
+          <div className="landing-card">
+            <div>
+              <span className="card-badge">Enterprise</span>
+              <h3>Индивидуальное решение</h3>
+              <p>Нестандартные интеграции с CRM/1С, ручная очистка сложных архивов и кастомные цепочки автоматизации.</p>
+            </div>
+            <div className="card-bottom">
+              <div className="card-price">По запросу</div>
+              <button className="btn-card-gold" onClick={onStartBuilder}>
+                Индивидуальный расчет
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Подвал */}
+      <footer className="cinematic-footer">
+        <div className="footer-left">
+          <NovaLogo size={20} />
+          <span>© {new Date().getFullYear()} Nova AI Operations. Все права защищены.</span>
+        </div>
+        <div className="footer-right">
+          <span>* Предварительные расчеты в конструкторе носят ознакомительный характер.</span>
+        </div>
+      </footer>
+    </div>
+  )
+}
+</file>
+
+<file path="pages/Login.tsx">
+import { FormEvent, useState } from 'react'
+import { LockKeyhole, LogIn, ShieldCheck } from 'lucide-react'
+import { api } from '../lib/api'
+
+export function Login({onLoggedIn}:{onLoggedIn:()=>void}) {
+  const [email,setEmail]=useState('')
+  const [password,setPassword]=useState('')
+  const [error,setError]=useState('')
+  const [loading,setLoading]=useState(false)
+  async function submit(e:FormEvent){
+    e.preventDefault(); setError(''); setLoading(true)
+    try { await api.login(email.trim(), password); onLoggedIn() }
+    catch(err){ setError(err instanceof Error ? err.message : 'Не удалось войти') }
+    finally { setLoading(false) }
+  }
+  return <main className="auth-shell">
+    <section className="auth-card">
+      <div className="auth-brand"><div className="brand-mark">N</div><div><strong>nova</strong><span>AI operations</span></div></div>
+      <div className="auth-icon"><ShieldCheck size={25}/></div>
+      <span className="section-label">NOVA / SECURE ACCESS</span>
+      <h1>Вход в Nova</h1>
+      <p className="auth-copy">Доступ к SaaS получают только пользователи с <code>is_staff = true</code>.</p>
+      <form onSubmit={submit} className="auth-form">
+        <label>Email<input type="email" required autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="admin@example.com"/></label>
+        <label>Пароль<input type="password" required autoComplete="current-password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="••••••••••••"/></label>
+        {error && <div className="error-box">{error}</div>}
+        <button className="primary-button auth-submit" disabled={loading}><LockKeyhole size={16}/>{loading?'Проверка…':'Войти'}<LogIn size={16}/></button>
+      </form>
+    </section>
+  </main>
+}
+</file>
+
+<file path="pages/Overview.tsx">
+import { Activity, Bot, Boxes, CheckCircle2, ChevronRight, Clock3, Cpu, Database } from '../components/Icons'
+import { MetricCard } from '../components/MetricCard'
+import { StatusBadge } from '../components/StatusBadge'
+import type { Agent, Vm } from '../lib/api'
+
+export function Overview({agents,vms,onOpenAgents,onOpenVms}:{agents:Agent[];vms:Vm[];onOpenAgents:()=>void;onOpenVms:()=>void}) {
+ const active=vms.filter(v=>v.status==='ACTIVE').length, errors=vms.filter(v=>v.status==='ERROR').length
+ const totalRam=vms.reduce((n,v)=>n+v.ram,0)
+ return <div className="page-stack">
+  <section className="hero"><div><span className="hero-kicker">EXECUTIVE CONTROL</span><h2>Работа AI-команды<br/><em>под контролем.</em></h2><p>Единая поверхность для состояния агентов, инфраструктуры и операционных сигналов.</p></div><div className="hero-orb"><div className="orb-core"><Activity size={27}/></div><span className="orb-label">MИЯ<br/><small>EXECUTIVE ASSISTANT</small></span></div></section>
+  <div className="metrics"><MetricCard label="AI-агенты" value={agents.length} detail={agents.length?'зарегистрировано':'нет данных'} icon={<Bot size={20}/>}/><MetricCard label="VM" value={vms.length} detail={`${active} активных`} icon={<Boxes size={20}/>}/><MetricCard label="Ресурсы" value={`${Math.round(totalRam/1024*10)/10} GB`} detail="суммарная RAM" icon={<Cpu size={20}/>}/><MetricCard label="Сигналы" value={errors} detail={errors?'требуют внимания':'критических нет'} icon={errors?<Clock3 size={20}/>:<CheckCircle2 size={20}/>}/></div>
+  <div className="grid-2">
+   <section className="panel"><div className="panel-head"><div><span className="section-label">AI TEAM</span><h3>Активные агенты</h3></div><button className="text-button" onClick={onOpenAgents}>Все агенты <ChevronRight size={15}/></button></div>
+    {agents.length?<div className="agent-list">{agents.slice(0,5).map(a=><div className="agent-row" key={a.id}><div className="agent-avatar"><Bot size={18}/></div><div className="row-main"><strong>{a.agent_name}</strong><span>{a.agent_description||'Описание не задано'}</span></div><span className="permission">{a.agent_permission}</span></div>)}</div>:<div className="panel-empty"><Bot size={25}/><p>Агенты ещё не зарегистрированы.</p></div>}
+   </section>
+   <section className="panel"><div className="panel-head"><div><span className="section-label">INFRASTRUCTURE</span><h3>Виртуальные машины</h3></div><button className="text-button" onClick={onOpenVms}>Все VM <ChevronRight size={15}/></button></div>
+    {vms.length?<div className="vm-list">{vms.slice(0,5).map(v=><div className="vm-row" key={v.id}><div className="vm-symbol"><Database size={17}/></div><div className="row-main"><strong>{v.title}</strong><span>{v.ipv4||'IP не назначен'} · {v.cores} CPU · {v.ram} MB</span></div><StatusBadge status={v.status}/></div>)}</div>:<div className="panel-empty"><Database size={25}/><p>Виртуальные машины не найдены.</p></div>}
+   </section>
+  </div>
+ </div>
+}
+</file>
+
+<file path="pages/Team.tsx">
+import { useMemo, useState, type FormEvent } from 'react'
+import { Mail, Plus, ShieldCheck, UserRound, Users } from 'lucide-react'
+import { api, type User } from '../lib/api'
+
+export function Team({users,currentUserId,onCreated,onUpdated}:{users:User[];currentUserId:number;onCreated:(user:User)=>void;onUpdated:(user:User)=>void}){
+ const [open,setOpen]=useState(false)
+ const [name,setName]=useState('')
+ const [email,setEmail]=useState('')
+ const [phone,setPhone]=useState('')
+ const [password,setPassword]=useState('')
+ const [isStaff,setIsStaff]=useState(false)
+ const [saving,setSaving]=useState(false)
+ const [error,setError]=useState('')
+ const [query,setQuery]=useState('')
+ const [editing,setEditing]=useState<number|null>(null)
+ const filtered=useMemo(()=>users.filter(u=>(u.name+' '+u.email).toLowerCase().includes(query.toLowerCase())),[users,query])
+ const staffCount=users.filter(u=>u.is_staff).length
+ function reset(){setName('');setEmail('');setPhone('');setPassword('');setIsStaff(false);setEditing(null);setError('')}
+ function startCreate(){reset();setOpen(true)}
+ function startEdit(user:User){setEditing(user.id);setName(user.name);setEmail(user.email);setPhone(user.phone_number??'');setPassword('');setIsStaff(user.is_staff);setError('');setOpen(true)}
+ async function submit(e:FormEvent){e.preventDefault();setSaving(true);setError('');try{
+   const payload={name:name.trim(),email:email.trim(),phone_number:phone.trim()||null,telegram_link:null,whatsapp_link:null,instagram_link:null,vk_link:null}
+   if(!payload.name||!payload.email) throw new Error('Заполните имя и email')
+   if(editing){
+     const updated=await api.updateUser(editing,payload)
+     const previous=users.find(u=>u.id===editing)
+     const result=previous && previous.is_staff!==isStaff ? await api.updateStaff(editing,isStaff) : updated
+     onUpdated(result)
+   }else{
+     if(password.length<12) throw new Error('Пароль должен содержать минимум 12 символов')
+     const created=await api.createUser({...payload,password})
+     if(isStaff){
+       onCreated(await api.updateStaff(created.id,true))
+     }else onCreated(created)
+   }
+   setOpen(false);reset()
+ }catch(err){setError(err instanceof Error?err.message:'Не удалось сохранить пользователя')}finally{setSaving(false)}}
+ return <div className="page-stack">
+  <div className="page-toolbar"><div><span className="section-label">SAAS / USERS</span><h2>Команда</h2><p>Пользователи Nova. Доступ к SaaS получают только пользователи с <code>is_staff = true</code>.</p></div><button className="primary-button" onClick={startCreate}><Plus size={17}/> Новый пользователь</button></div>
+  <div className="settings-grid"><section className="panel setting-card"><div className="metric-icon"><Users size={20}/></div><h3>Пользователи</h3><strong>{users.length}</strong><p>Все зарегистрированные пользователи SaaS.</p></section><section className="panel setting-card"><div className="metric-icon"><ShieldCheck size={20}/></div><h3>SaaS-доступ</h3><strong>{staffCount} staff</strong><p>Только пользователи с <code>is_staff = true</code> должны иметь доступ к интерфейсу Nova.</p></section></div>
+  <div className="filterbar"><div className="search"><UserRound size={16}/><input placeholder="Поиск по имени или email" value={query} onChange={e=>setQuery(e.target.value)}/></div><span className="result-count">{filtered.length} из {users.length}</span></div>
+  <section className="table-panel"><div className="table-head team-user-head"><span>ПОЛЬЗОВАТЕЛЬ</span><span>EMAIL</span><span>ДОСТУП</span><span>СОЗДАН</span><span/></div>
+   {filtered.map(user=><div className="table-row team-user-row" key={user.id}><div className="identity"><div className="agent-avatar"><UserRound size={18}/></div><div><strong>{user.name}</strong><span>ID #{user.id}{user.phone_number?` · ${user.phone_number}`:''}</span></div></div><div className="muted"><Mail size={14}/>{user.email}</div><div><span className={user.is_staff?'access-badge staff':'access-badge'}>{user.is_staff?'STAFF / SaaS':'NO ACCESS'}</span></div><div className="muted">{new Date(user.created_at).toLocaleDateString('ru-RU')}</div><button className="icon-button ghost" onClick={()=>startEdit(user)} aria-label="Редактировать">•••</button></div>)}
+   {!filtered.length&&<div className="empty-table"><Users size={28}/><strong>Пользователи не найдены</strong><span>Создайте первого пользователя команды.</span></div>}
+  </section>
+  {open&&<div className="modal-backdrop" onMouseDown={e=>{if(e.currentTarget===e.target&&!saving)setOpen(false)}}><form className="modal" onSubmit={submit}><div className="modal-head"><div><span className="section-label">SAAS / USER</span><h3>{editing?'Редактировать пользователя':'Создать пользователя'}</h3><p>Пользователь — человек, которому может быть выдан доступ к SaaS. AI-агенты создаются отдельно.</p></div><button type="button" className="icon-button ghost" onClick={()=>setOpen(false)}>×</button></div><div className="form-grid"><label>Имя<input required value={name} onChange={e=>setName(e.target.value)} placeholder="Имя пользователя"/></label><label>Email<input required type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="name@example.com"/></label></div><label>Телефон<input value={phone} onChange={e=>setPhone(e.target.value)} placeholder="Необязательно"/></label>{!editing&&<label>Пароль<input required minLength={12} type="password" autoComplete="new-password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Минимум 12 символов"/></label>}<label className="staff-toggle"><input type="checkbox" checked={isStaff} disabled={editing===currentUserId} onChange={e=>setIsStaff(e.target.checked)}/><span><strong>Доступ к SaaS</strong><small>Разрешить доступ к Nova для этого пользователя (`is_staff = true`). {editing===currentUserId?'Свой staff-доступ нельзя отключить.':''}</small></span></label>{error&&<div className="error-box">{error}</div>}<div className="modal-actions"><button type="button" className="secondary-button" onClick={()=>setOpen(false)}>Отмена</button><button className="primary-button" disabled={saving}>{saving?'Сохранение…':editing?'Сохранить':'Создать пользователя'}</button></div></form></div>}
+ </div>
+}
+</file>
+
+<file path="App.tsx">
+import { useState, useEffect } from 'react'
+import { LandingPage } from './pages/LandingPage'
+import { ConstructorPage } from './pages/ConstructorPage'
+import { Overview } from './pages/Overview'
+import { Agents } from './pages/Agents'
+import { Infrastructure } from './pages/Infrastructure'
+import { Journal } from './pages/Journal'
+import { Team } from './pages/Team'
+import { Login } from './pages/Login'
+import { Sidebar, type Page } from './components/Sidebar'
+import { Topbar } from './components/Topbar'
+import { api, getToken, clearToken, type Agent, type User, type Vm } from './lib/api'
+import './styles.css'
+
+export default function App() {
+  const [pathname, setPathname] = useState(() => window.location.pathname)
+  // Режим экрана для пользователей (landing или constructor)
+  const [viewMode, setViewMode] = useState<'landing' | 'constructor'>('landing')
+
+  const [page, setPage] = useState<Page>('overview')
+  const [user, setUser] = useState<User | null>(null)
+  const [authLoading, setAuthLoading] = useState(true)
+  const [dataLoading, setDataLoading] = useState(false)
+
+  const [users, setUsers] = useState<User[]>([])
+  const [agents, setAgents] = useState<Agent[]>([])
+  const [vms, setVms] = useState<Vm[]>([])
+  const [, setError] = useState('')
+
+  useEffect(() => {
+    const handlePopState = () => setPathname(window.location.pathname)
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
+  useEffect(() => {
+    async function bootstrap() {
+      if (!getToken()) {
+        setAuthLoading(false)
+        return
+      }
+      try {
+        const me = await api.me()
+        setUser(me)
+      } catch {
+        clearToken()
+        setUser(null)
+      } finally {
+        setAuthLoading(false)
+      }
+    }
+    bootstrap()
+  }, [])
+
+  const loadAdminData = async () => {
+    if (!user?.is_staff) return
+    setDataLoading(true)
+    setError('')
+    try {
+      const us = await api.users().catch(() => [])
+      setUsers(Array.isArray(us) ? us : [])
+
+      const ag = await api.agents(user.id).catch(() => [])
+      setAgents(Array.isArray(ag) ? ag : [])
+
+      const vmResults = await Promise.all(
+        ['active', 'restarting', 'disabled', 'creating', 'error'].map(s =>
+          api.vmsByStatus(s).catch(() => [])
+        )
+      )
+      const allVms = vmResults.flat()
+      setVms(allVms.filter((v, i, a) => a.findIndex(x => x.id === v.id) === i))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Не удалось загрузить данные')
+    } finally {
+      setDataLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (pathname === '/admin' && user?.is_staff) {
+      loadAdminData()
+    }
+  }, [pathname, user])
+
+  // Если путь НЕ /admin — показываем либо Лендинг, либо Конструктор
+  if (pathname !== '/admin') {
+    if (viewMode === 'constructor') {
+      return <ConstructorPage onBackToHome={() => setViewMode('landing')} />
+    }
+    return <LandingPage onStartBuilder={() => setViewMode('constructor')} />
+  }
+
+  // Роут /admin
+  if (authLoading) {
+    return (
+      <main className="auth-shell">
+        <div className="auth-loading">Проверка доступа…</div>
+      </main>
+    )
+  }
+
+  if (!user) {
+    return (
+      <Login
+        onLoggedIn={async () => {
+          const me = await api.me()
+          setUser(me)
+        }}
+      />
+    )
+  }
+
+  if (!user.is_staff) {
+    return (
+      <main className="auth-shell">
+        <section className="auth-card">
+          <h1>Доступ закрыт</h1>
+          <p className="auth-copy">Панель доступна только администраторам.</p>
+          <button
+            className="secondary-button"
+            onClick={() => {
+              window.history.pushState({}, '', '/')
+              setPathname('/')
+            }}
+          >
+            На главную
+          </button>
+        </section>
+      </main>
+    )
+  }
+
+  const titles: Record<Page, [string, string]> = {
+    overview: ['Обзор', 'Сводка по состоянию AI-команды'],
+    agents: ['AI-команда', 'Реестр агентов'],
+    vms: ['Инфраструктура', 'Виртуальные машины'],
+    journal: ['Журнал', 'Аудит подключений'],
+    team: ['Команда', 'Пользователи и права доступа'],
+  }
+
+  return (
+    <div className="app">
+      <Sidebar page={page} onNavigate={setPage} userName={user.name} />
+      <main className="main">
+        <div style={{ padding: '12px 0', borderBottom: '1px solid var(--border-color)' }}>
+          <button
+            className="secondary-button"
+            onClick={() => {
+              window.history.pushState({}, '', '/')
+              setPathname('/')
+            }}
+          >
+            ← На главную страницу
+          </button>
+        </div>
+        <Topbar
+          title={titles[page][0]}
+          subtitle={titles[page][1]}
+          onRefresh={loadAdminData}
+          loading={dataLoading}
+        />
+        {page === 'overview' && (
+          <Overview
+            agents={agents}
+            vms={vms}
+            onOpenAgents={() => setPage('agents')}
+            onOpenVms={() => setPage('vms')}
+          />
+        )}
+        {page === 'agents' && (
+          <Agents
+            agents={agents}
+            vms={vms}
+            userId={user.id}
+            onCreated={a => setAgents(prev => [a, ...prev])}
+          />
+        )}
+        {page === 'vms' && (
+          <Infrastructure vms={vms} onCreated={v => setVms(prev => [v, ...prev])} />
+        )}
+        {page === 'journal' && <Journal vms={vms} />}
+        {page === 'team' && (
+          <Team
+            users={users}
+            currentUserId={user.id}
+            onCreated={u => setUsers(prev => [u, ...prev])}
+            onUpdated={u => setUsers(prev => prev.map(x => (x.id === u.id ? u : x)))}
+          />
+        )}
+      </main>
+    </div>
+  )
+}
+</file>
+
+<file path="main.tsx">
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import App from './App'
+import { ErrorBoundary } from './components/ErrorBoundary'
+
+const root = document.getElementById('root')
+if (!root) throw new Error('Root element #root not found')
+
+createRoot(root).render(
+  <StrictMode>
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  </StrictMode>,
+)
+</file>
+
+<file path="styles.css">
+/* Палитра из Брендбука Nova (Concept G — Beacon Axis) */
+:root {
+  --color-midnight: #0F172A;
+  --color-slate-dark: #1E293B;
+  --color-slate-mid: #334155;
+  --color-silver: #94A3B8;
+  --color-mist: #E2E8F0;
+  --color-white: #FFFFFF;
+  --color-nova-gold: #F59E0B;
+  --color-gold-light: #FEF3C7;
+
+  /* Светлая тема по умолчанию */
+  --bg-main: var(--color-mist);
+  --bg-card: var(--color-white);
+  --bg-card-hover: #F8FAFC;
+  --border-color: #CBD5E1;
+  --text-primary: var(--color-midnight);
+  --text-muted: #64748B;
+  --accent-gold: var(--color-nova-gold);
+  --accent-gold-soft: var(--color-gold-light);
+}
+
+/* Автоматическая тёмная тема по системным настройкам */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-main: var(--color-midnight);
+    --bg-card: var(--color-slate-dark);
+    --bg-card-hover: #26334D;
+    --border-color: var(--color-slate-mid);
+    --text-primary: var(--color-white);
+    --text-muted: var(--color-silver);
+    --accent-gold: var(--color-nova-gold);
+    --accent-gold-soft: rgba(245, 158, 11, 0.15);
+  }
+}
+
+/* Стили главной страницы */
+.landing-shell {
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  padding: 32px 48px;
+}
+
+.landing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 48px;
+}
+
+.brand-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.brand-subtitle {
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  gap: 28px;
+}
+
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover {
+  color: var(--accent-gold);
+}
+
+.hero-section {
+  max-width: 820px;
+  margin-bottom: 64px;
+}
+
+.hero-kicker {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent-gold);
+  font-weight: 700;
+}
+
+.hero-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 44px;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin: 12px 0 20px;
+  color: var(--text-primary);
+}
+
+.hero-subtitle {
+  font-size: 18px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.btn-primary-gold {
+  background-color: var(--accent-gold);
+  color: #0F172A;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 14px 28px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.2s ease;
+}
+
+.btn-primary-gold:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  margin-top: 24px;
+}
+
+.landing-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.landing-card:hover {
+  border-color: var(--accent-gold);
+  background-color: var(--bg-card-hover);
+}
+
+.landing-card h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  margin: 0 0 10px;
+  color: var(--text-primary);
+}
+
+.landing-card p {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.card-price {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent-gold);
+}
+
+.info-banner {
+  background-color: var(--bg-card);
+  border-left: 4px solid var(--accent-gold);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 60px;
+}
+
+/* ========================================================
+   КОНСТРУКТОР AI-СЕРВИСОВ (BEACON AXIS THEME)
+   ======================================================== */
+
+.constructor-page {
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  padding: 24px 40px 60px;
+}
+
+.construct-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 20px;
+  margin-bottom: 32px;
+}
+
+.construct-header-left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.back-link-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.back-link-btn:hover {
+  border-color: var(--accent-gold);
+  color: var(--text-primary);
+}
+
+.construct-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--accent-gold);
+  font-weight: 700;
+}
+
+.construct-title {
+  margin: 4px 0 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 26px;
+}
+
+.construct-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gold-btn {
+  background-color: var(--accent-gold) !important;
+  color: #0F172A !important;
+  font-weight: 700 !important;
+  border: none !important;
+}
+
+/* Сетка конструктора: Main (слева) + Sidebar (справа) */
+.construct-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 1080px) {
+  .construct-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.construct-main {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Секция калькулятора */
+.calc-section {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px 28px;
+}
+
+.calc-section-head {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.step-num {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--accent-gold);
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.calc-section-head h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  margin: 0 0 4px;
+}
+
+.calc-section-head p {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.count-pill {
+  font-size: 12px;
+  padding: 2px 8px;
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--accent-gold);
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* Карточки выбора продукта */
+.product-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.product-select-card {
+  position: relative;
+  background-color: var(--bg-card-hover);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+}
+
+.product-select-card:hover {
+  border-color: var(--accent-gold);
+}
+
+.product-select-card.active {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+  background-color: var(--bg-card);
+}
+
+.product-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--accent-gold);
+  background: rgba(245, 158, 11, 0.15);
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.prod-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.prod-sub {
+  font-size: 12px;
+  color: var(--accent-gold);
+  margin-bottom: 10px;
+}
+
+.prod-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 16px;
+  flex-grow: 1;
+}
+
+.prod-prices {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--border-color);
+  padding-top: 12px;
+  font-size: 12px;
+}
+
+.prod-price-item span {
+  display: block;
+  color: var(--text-muted);
+}
+
+.prod-price-item strong {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+/* Сетка опций (Features) */
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.option-check-card {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card-hover);
+  border-radius: 8px;
+  cursor: pointer;
+  align-items: flex-start;
+  transition: border-color 0.2s;
+}
+
+.option-check-card:hover {
+  border-color: var(--accent-gold);
+}
+
+.option-check-card.checked {
+  border-color: var(--accent-gold);
+  background: var(--bg-card);
+}
+
+.option-check-card.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.check-card-body {
+  flex: 1;
+}
+
+.check-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.check-card-title strong {
+  font-size: 14px;
+}
+
+.check-card-body p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+  line-height: 1.4;
+}
+
+.check-card-meta {
+  display: flex;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--accent-gold);
+}
+
+.pill-individual {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--accent-gold);
+  font-weight: 600;
+}
+
+.pill-hard {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(148, 163, 184, 0.2);
+  color: var(--color-silver);
+}
+
+/* Интеграции */
+.integrations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.integration-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 18px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--bg-card-hover);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.integration-row:hover {
+  border-color: var(--accent-gold);
+}
+
+.integration-row.active {
+  border-color: var(--accent-gold);
+  background-color: var(--bg-card);
+}
+
+.integ-info {
+  flex: 1;
+}
+
+.integ-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.integ-top strong {
+  font-size: 14px;
+}
+
+.level-tag {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--border-color);
+  color: var(--text-primary);
+}
+
+.level-tag.level-1 { background: rgba(148, 163, 184, 0.2); }
+.level-tag.level-2 { background: rgba(245, 158, 11, 0.15); color: var(--accent-gold); }
+.level-tag.level-3 { background: rgba(245, 158, 11, 0.3); color: var(--accent-gold); }
+.level-tag.level-individual { background: #334155; color: #fff; }
+
+.connector-tag {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.integ-info p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.integ-restriction {
+  font-size: 11px;
+  color: var(--accent-gold);
+  margin-top: 4px;
+}
+
+.integ-pricing {
+  text-align: right;
+  min-width: 130px;
+}
+
+.setup-cost {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.monthly-cost {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.monthly-cost.free {
+  color: #10B981;
+}
+
+/* Счётчик сотрудников */
+.counter-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card-hover);
+  padding: 18px 24px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.counter-info strong {
+  font-size: 15px;
+}
+
+.counter-info p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 4px 0 0;
+}
+
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.step-btn {
+  width: 36px;
+  height: 36px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 6px;
+  font-size: 18px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.step-btn:hover:not(:disabled) {
+  border-color: var(--accent-gold);
+}
+
+.step-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.step-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* Слайдер и чекбоксы хранилища */
+.slider-box {
+  background: var(--bg-card-hover);
+  padding: 18px 24px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 16px;
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.slider-indicator {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent-gold);
+}
+
+.gold-range {
+  width: 100%;
+  accent-color: var(--accent-gold);
+  cursor: pointer;
+}
+
+.knowledge-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.checkbox-tile {
+  display: flex;
+  gap: 12px;
+  padding: 14px 18px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  background: var(--bg-card-hover);
+  align-items: flex-start;
+}
+
+.checkbox-tile.highlight-tile {
+  border-left: 3px solid var(--accent-gold);
+}
+
+.tile-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.tile-title strong {
+  font-size: 14px;
+}
+
+.tile-title span {
+  font-size: 12px;
+  color: var(--accent-gold);
+}
+
+.checkbox-tile p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* AI Modes */
+.ai-modes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.ai-mode-card {
+  display: flex;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-card-hover);
+  cursor: pointer;
+  align-items: flex-start;
+}
+
+.ai-mode-card.active {
+  border-color: var(--accent-gold);
+  background: var(--bg-card);
+}
+
+.ai-mode-card strong {
+  font-size: 14px;
+}
+
+.ai-mode-card p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 4px 0 0;
+}
+
+.notice-box {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(148, 163, 184, 0.1);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ========================================================
+   ПЛАВАЮЩАЯ БОКОВАЯ ПАНЕЛЬ (STICKY SUMMARY)
+   ======================================================== */
+
+.construct-sidebar {
+  position: relative;
+}
+
+.summary-sticky-card {
+  position: sticky;
+  top: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.summary-head {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+}
+
+.summary-label {
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--accent-gold);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.summary-head h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  margin: 4px 0 0;
+  font-size: 20px;
+}
+
+.summary-product {
+  margin-bottom: 18px;
+}
+
+.prod-chip {
+  display: inline-block;
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--accent-gold);
+  font-weight: 700;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.summary-product p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* Оповещение об индивидуальном расчете */
+.individual-alert-panel {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid var(--accent-gold);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 18px;
+}
+
+.alert-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent-gold);
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.individual-alert-panel p {
+  font-size: 12px;
+  color: var(--text-primary);
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
+
+.reasons-list {
+  font-size: 11px;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summary-figures {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 18px;
+}
+
+.price-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.price-row span {
+  display: block;
+  font-size: 13px;
+}
+
+.price-row small {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.price-row strong {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 19px;
+}
+
+.price-row strong.gold-text {
+  color: var(--accent-gold);
+}
+
+.price-row.ai-row {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.summary-breakdown {
+  margin-bottom: 20px;
+}
+
+.breakdown-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.breakdown-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.breakdown-list li {
+  display: flex;
+  justify-content: space-between;
+}
+
+.summary-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.full-width {
+  width: 100%;
+  text-align: center;
+}
+
+.reset-link {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 4px;
+}
+
+.reset-link:hover {
+  color: var(--text-primary);
+}
+
+.disclaimer-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-top: 14px;
+}
+
+/* Модальное окно лида */
+.lead-modal {
+  max-width: 540px;
+}
+
+.checkbox-kp {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  cursor: pointer;
+  margin: 12px 0;
+}
+
+.warning-note {
+  background: rgba(245, 158, 11, 0.1);
+  border-left: 3px solid var(--accent-gold);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.lead-success-box {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.lead-success-box h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  margin: 14px 0 8px;
+}
+
+.lead-success-box p {
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+/* Базовый сброс зазоров */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+}
+
+/* ========================================================
+   СТЕППЕР ШАГОВ (WIZARD STEPPER)
+   ======================================================== */
+
+.wizard-stepper {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.wizard-step-item {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 12px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wizard-step-item:hover {
+  border-color: var(--accent-gold);
+}
+
+.wizard-step-item.active {
+  border-color: var(--accent-gold);
+  background-color: var(--bg-card-hover);
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.wizard-step-item.passed .wizard-step-badge {
+  background: var(--accent-gold);
+  color: #0F172A;
+}
+
+.wizard-step-badge {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(148, 163, 184, 0.15);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.wizard-step-item.active .wizard-step-badge {
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--accent-gold);
+  border: 1px solid var(--accent-gold);
+}
+
+.wizard-step-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.step-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.step-name {
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.wizard-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}
+
+/* ========================================================
+   СТИЛИ МОДАЛЬНОГО ОКНА И ПОЛЕЙ ВВОДА (FIX СКРИНШОТА)
+   ======================================================== */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.78);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal.lead-modal {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 32px;
+  width: 100%;
+  max-width: 580px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+  color: var(--text-primary);
+}
+
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.modal-head h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22px;
+  margin: 4px 0 8px;
+}
+
+.modal-head p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 540px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+.field-group.full-width-field {
+  margin-bottom: 16px;
+}
+
+.field-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  background-color: var(--bg-card-hover);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+.checkbox-kp {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  cursor: pointer;
+  margin-bottom: 18px;
+  color: var(--text-primary);
+}
+
+.checkbox-kp input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent-gold);
+  cursor: pointer;
+}
+
+.warning-note {
+  background: rgba(245, 158, 11, 0.1);
+  border-left: 3px solid var(--accent-gold);
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text-primary);
+  margin-bottom: 18px;
+  border-radius: 0 6px 6px 0;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.modal-actions button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.lead-success-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px 0 12px;
+  gap: 12px;
+}
+
+.lead-success-box h4 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  margin: 0;
+}
+
+.lead-success-box p {
+  color: var(--text-muted);
+  font-size: 14px;
+  max-width: 400px;
+  margin: 0 0 16px;
+}
+
+/* ========================================================
+   CINEMATIC NOVA LANDING (BEACON AXIS THEME)
+   ======================================================== */
+
+:root {
+  --color-midnight: #0F172A;
+  --color-slate-dark: #1E293B;
+  --color-slate-mid: #334155;
+  --color-silver: #94A3B8;
+  --color-mist: #E2E8F0;
+  --color-white: #FFFFFF;
+  --color-nova-gold: #F59E0B;
+  --color-gold-light: #FEF3C7;
+}
+
+/* Переменные тёмной темы (по умолчанию) */
+.landing-cinematic.theme-dark {
+  --bg-main: #0B1120;
+  --bg-card: #1E293B;
+  --bg-card-hover: #26354D;
+  --border-color: rgba(148, 163, 184, 0.2);
+  --text-primary: #FFFFFF;
+  --text-muted: #94A3B8;
+  --accent-gold: #F59E0B;
+  --curve-color: rgba(56, 189, 248, 0.35);
+  --curve-glow: rgba(56, 189, 248, 0.15);
+}
+
+/* Переменные светлой темы */
+.landing-cinematic.theme-light {
+  --bg-main: #F1F5F9;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F8FAFC;
+  --border-color: #CBD5E1;
+  --text-primary: #0F172A;
+  --text-muted: #64748B;
+  --accent-gold: #D97706;
+  --curve-color: rgba(245, 158, 11, 0.4);
+  --curve-glow: rgba(245, 158, 11, 0.15);
+}
+
+.landing-cinematic {
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  position: relative;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Логотип lockup */
+.nova-brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nova-brand-text {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: 'Space Grotesk', serif, sans-serif;
+  letter-spacing: 0.18em;
+  font-weight: 700;
+  font-size: 19px;
+}
+
+.brand-word {
+  color: var(--text-primary);
+}
+
+.brand-word-ai {
+  color: var(--text-primary);
+}
+
+.letter-a {
+  color: var(--accent-gold);
+}
+
+/* Хедер */
+.cinematic-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 64px;
+  position: relative;
+  z-index: 20;
+}
+
+.header-nav {
+  display: flex;
+  gap: 36px;
+}
+
+.header-nav a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.2s;
+  position: relative;
+}
+
+.header-nav a:hover,
+.header-nav a.active {
+  color: var(--accent-gold);
+}
+
+.header-nav a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--accent-gold);
+  border-radius: 2px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.lang-switcher {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--border-color);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.theme-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.theme-toggle-btn:hover {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+
+.btn-telegram-outline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  text-decoration: none;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.btn-telegram-outline:hover {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+
+/* ================= HERO СЕКЦИЯ ================= */
+.cinematic-hero {
+  position: relative;
+  min-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px 64px 0;
+  overflow: hidden;
+}
+
+/* Фоновые звёзды */
+.space-particles {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(1px 1px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+    radial-gradient(1.5px 1.5px at 150px 80px, #ffffff, rgba(0,0,0,0)),
+    radial-gradient(1px 1px at 320px 240px, #FEF3C7, rgba(0,0,0,0)),
+    radial-gradient(1px 1px at 600px 180px, #ffffff, rgba(0,0,0,0)),
+    radial-gradient(1.5px 1.5px at 850px 90px, #F59E0B, rgba(0,0,0,0)),
+    radial-gradient(1px 1px at 1100px 210px, #ffffff, rgba(0,0,0,0));
+  background-repeat: repeat;
+  background-size: 1200px 600px;
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* Светящаяся кривизна планеты (как на скриншоте) */
+.planet-horizon-curve {
+  position: absolute;
+  bottom: -400px;
+  left: 20%;
+  right: -250px;
+  height: 800px;
+  border-radius: 50%;
+  border-top: 2px solid var(--curve-color);
+  box-shadow: 0 -16px 80px var(--curve-glow), inset 0 20px 60px rgba(15, 23, 42, 0.8);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-content-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+  margin-top: 20px;
+}
+
+@media (max-width: 1024px) {
+  .hero-content-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-visual-block {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+  }
+}
+
+.hero-kicker-caps {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.hero-giant-title {
+  font-family: 'Space Grotesk', serif, sans-serif;
+  font-size: 72px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  margin: 0 0 16px;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.gold-letter {
+  color: var(--accent-gold);
+}
+
+.hero-subheading {
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.35;
+  margin: 0 0 20px;
+  max-width: 620px;
+  color: var(--text-primary);
+}
+
+.hero-description {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  max-width: 540px;
+  margin: 0 0 36px;
+}
+
+.hero-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+/* Кнопка "Собрать конфигурацию" */
+.btn-hero-primary-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--accent-gold);
+  color: #0F172A;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 14px 28px;
+  border-radius: 28px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+}
+
+.btn-hero-primary-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(245, 158, 11, 0.45);
+}
+
+.btn-icon {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.btn-hero-link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  transition: gap 0.2s, color 0.2s;
+}
+
+.btn-hero-link-arrow:hover {
+  color: var(--accent-gold);
+  gap: 12px;
+}
+
+/* Правый арт */
+.hero-visual-block {
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.beacon-wrapper {
+  animation: floatOrb 7s ease-in-out infinite;
+  filter: drop-shadow(0 0 50px rgba(245, 158, 11, 0.25));
+}
+
+@keyframes floatOrb {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+/* ================= НИЖНЯЯ ПАНЕЛЬ ИЗ ТРЕХ КОЛОНОК ================= */
+.hero-ticker-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--border-color);
+  margin-top: 48px;
+  position: relative;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+}
+
+@media (max-width: 860px) {
+  .hero-ticker-bar {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ticker-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 24px 20px;
+  border-right: 1px solid var(--border-color);
+}
+
+.ticker-item:last-child {
+  border-right: none;
+}
+
+.ticker-icon {
+  color: var(--accent-gold);
+  margin-top: 2px;
+}
+
+.ticker-text strong {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+
+.ticker-text p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ================= СЕКЦИЯ ПРОДУКТОВ НА ЛЕНДИНГЕ ================= */
+.landing-section {
+  padding: 80px 64px;
+  position: relative;
+  z-index: 10;
+}
+
+.section-head-center {
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto 48px;
+}
+
+.section-head-center h2 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 32px;
+  margin: 8px 0 12px;
+}
+
+.section-head-center p {
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 28px;
+}
+
+.landing-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: all 0.25s ease;
+}
+
+.landing-card:hover {
+  border-color: var(--accent-gold);
+  transform: translateY(-4px);
+}
+
+.landing-card.featured {
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 0 8px 30px rgba(245, 158, 11, 0.08);
+}
+
+.card-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: rgba(148, 163, 184, 0.1);
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+}
+
+.card-badge.featured {
+  color: var(--accent-gold);
+  background: rgba(245, 158, 11, 0.15);
+}
+
+.landing-card h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 22px;
+  margin: 0 0 12px;
+}
+
+.landing-card p {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.card-bottom {
+  border-top: 1px solid var(--border-color);
+  padding-top: 20px;
+}
+
+.card-price {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent-gold);
+  margin-bottom: 16px;
+}
+
+.btn-card-gold {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card-hover);
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-card-gold:hover {
+  background-color: var(--accent-gold);
+  color: #0F172A;
+  border-color: var(--accent-gold);
+}
+
+/* Футер */
+.cinematic-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 64px;
+  border-top: 1px solid var(--border-color);
+  font-size: 13px;
+  color: var(--text-muted);
+  position: relative;
+  z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .cinematic-header,
+  .cinematic-hero,
+  .landing-section,
+  .cinematic-footer {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+  .header-nav {
+    display: none;
+  }
+  .hero-giant-title {
+    font-size: 48px;
+  }
+}
+</file>
+
+<file path="vite-env.d.ts">
+/// <reference types="vite/client" />
+</file>
+
+</files>
