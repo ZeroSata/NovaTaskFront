@@ -33,6 +33,7 @@ const STORAGE_KEY = 'nova_constructor_state_v1'
 const initialDefaultState: ConstructorState = {
   productId: 'prod-single',
   agentSpecialization: 'AI-SMM-ассистент и контент-мейкер',
+  agentSpecializations: ['AI-SMM-ассистент и контент-мейкер'],
   featureIds: ['ft-text-gen', 'ft-doc-search'],
   integrationIds: ['int-tg-bot'],
   employeeCount: 2,
@@ -147,6 +148,17 @@ export function ConstructorModal({ initialProductId, onClose }: ConstructorModal
 
   const pricing = useMemo(() => calculatePrice(state, config), [state, config])
   const selectedProduct = config.products.find(p => p.id === state.productId) ?? config.products[0]
+  const isBundle = state.productId === 'prod-bundle' || selectedProduct.type === 'bundle'
+
+  const selectedSpecs = useMemo(() => {
+    if (state.agentSpecializations && state.agentSpecializations.length > 0) {
+      return state.agentSpecializations
+    }
+    if (state.agentSpecialization) {
+      return state.agentSpecialization.split(', ').map(s => s.trim()).filter(Boolean)
+    }
+    return [SPECIALIZATIONS[0]]
+  }, [state.agentSpecializations, state.agentSpecialization])
 
   const handleStepChange = (newStep: number) => {
     trackEvent({ type: 'STEP_CHANGE', fromStep: currentStep, toStep: newStep })
@@ -155,7 +167,59 @@ export function ConstructorModal({ initialProductId, onClose }: ConstructorModal
 
   const handleProductSelect = (prodId: string) => {
     trackEvent({ type: 'PRODUCT_SELECT', productId: prodId })
-    setState(s => ({ ...s, productId: prodId }))
+    setState(s => {
+      if (prodId === 'prod-bundle') {
+        const current = s.agentSpecializations && s.agentSpecializations.length > 0
+          ? s.agentSpecializations
+          : s.agentSpecialization ? s.agentSpecialization.split(', ').map(x => x.trim()).filter(Boolean) : [SPECIALIZATIONS[0]]
+        const nextSpecs = [...current]
+        if (nextSpecs.length < 2) {
+          const nextAvail = SPECIALIZATIONS.find(sp => !nextSpecs.includes(sp)) || SPECIALIZATIONS[1]
+          nextSpecs.push(nextAvail)
+        }
+        return {
+          ...s,
+          productId: prodId,
+          agentSpecializations: nextSpecs,
+          agentSpecialization: nextSpecs.join(', '),
+        }
+      } else {
+        const singleSpec = s.agentSpecializations?.[0] || s.agentSpecialization?.split(', ')[0] || SPECIALIZATIONS[0]
+        return {
+          ...s,
+          productId: prodId,
+          agentSpecializations: [singleSpec],
+          agentSpecialization: singleSpec,
+        }
+      }
+    })
+  }
+
+  const handleSpecToggle = (spec: string) => {
+    if (isBundle) {
+      const isSelected = selectedSpecs.includes(spec)
+      let nextSpecs: string[]
+      if (isSelected) {
+        if (selectedSpecs.length > 1) {
+          nextSpecs = selectedSpecs.filter(s => s !== spec)
+        } else {
+          nextSpecs = selectedSpecs
+        }
+      } else {
+        nextSpecs = [...selectedSpecs, spec]
+      }
+      setState(s => ({
+        ...s,
+        agentSpecializations: nextSpecs,
+        agentSpecialization: nextSpecs.join(', '),
+      }))
+    } else {
+      setState(s => ({
+        ...s,
+        agentSpecializations: [spec],
+        agentSpecialization: spec,
+      }))
+    }
   }
 
   const handleReset = () => {
@@ -291,18 +355,46 @@ export function ConstructorModal({ initialProductId, onClose }: ConstructorModal
 
                   {/* Специализация агента */}
                   <div className="spec-picker-box">
-                    <span className="field-label">Назначение / ключевая роль AI-ассистента:</span>
+                    <div className="spec-picker-header">
+                      <div>
+                        <span className="field-label">Назначение / ключевая роль AI-ассистента:</span>
+                        <p className="spec-picker-desc">
+                          {isBundle
+                            ? 'Для комплекта AI-агентов выберите от 2 специализаций (связка специалистов с единой базой):'
+                            : 'Выберите ключевую профильную роль для виртуального специалиста:'}
+                        </p>
+                      </div>
+                      {isBundle && (
+                        <div className={`spec-count-badge ${selectedSpecs.length >= 2 ? 'valid' : 'warning'}`}>
+                          <span className={`badge-dot ${selectedSpecs.length >= 2 ? 'valid' : 'warning'}`} />
+                          {selectedSpecs.length >= 2 ? (
+                            <span>Выбрано ролей: <strong>{selectedSpecs.length}</strong></span>
+                          ) : (
+                            <span>Выбрано: <strong>{selectedSpecs.length}</strong> (нужно 2+)</span>
+                          )}
+                        </div>
+                      )}
+                    </div>
                     <div className="spec-chips-row">
-                      {SPECIALIZATIONS.map((spec, i) => (
-                        <button
-                          key={i}
-                          type="button"
-                          className={`spec-chip-btn ${state.agentSpecialization === spec ? 'active' : ''}`}
-                          onClick={() => setState(s => ({ ...s, agentSpecialization: spec }))}
-                        >
-                          {spec}
-                        </button>
-                      ))}
+                      {SPECIALIZATIONS.map((spec, i) => {
+                        const isSelected = selectedSpecs.includes(spec)
+                        return (
+                          <button
+                            key={i}
+                            type="button"
+                            className={`spec-chip-btn ${isSelected ? 'active' : ''} ${isBundle ? 'bundle-chip' : ''}`}
+                            onClick={() => handleSpecToggle(spec)}
+                            title={isBundle ? (isSelected ? 'Снять выбор' : 'Добавить в комплект') : undefined}
+                          >
+                            {isBundle && (
+                              <span className={`chip-indicator ${isSelected ? 'selected' : ''}`}>
+                                {isSelected ? '✓' : '+'}
+                              </span>
+                            )}
+                            <span>{spec}</span>
+                          </button>
+                        )
+                      })}
                     </div>
                   </div>
 
@@ -931,14 +1023,38 @@ export function ConstructorModal({ initialProductId, onClose }: ConstructorModal
             <aside className="construct-sidebar">
               <div className="summary-sticky-card">
                 <div className="summary-head">
-                  <span className="summary-label">ИТОГОВАЯ КОНФИГУРАЦИЯ</span>
+                  <div className="summary-head-top">
+                    <span className="summary-label">ИТОГОВАЯ КОНФИГУРАЦИЯ</span>
+                    <span className="summary-live-badge"><span className="pulse-dot" /></span>
+                  </div>
                   <h3>Сводка расчёта</h3>
                 </div>
 
                 <div className="summary-product">
-                  <span className="prod-chip">{selectedProduct.title}</span>
+                  <div className="summary-prod-badge-row">
+                    <span className="prod-chip">{selectedProduct.title}</span>
+                    {isBundle && (
+                      <span className="roles-count-pill">
+                        {selectedSpecs.length} {selectedSpecs.length === 1 ? 'роль' : selectedSpecs.length < 5 ? 'роли' : 'ролей'}
+                      </span>
+                    )}
+                  </div>
                   <p>{selectedProduct.subtitle}</p>
-                  <small className="summary-spec">{state.agentSpecialization}</small>
+                  {isBundle && selectedSpecs.length > 1 ? (
+                    <div className="summary-bundle-roles">
+                      <span className="bundle-roles-title">Роли в связке ({selectedSpecs.length}):</span>
+                      <ul className="bundle-roles-list">
+                        {selectedSpecs.map((sp, idx) => (
+                          <li key={idx} className="bundle-role-item">
+                            <span className="role-bullet">✦</span>
+                            <span>{sp}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <small className="summary-spec">{state.agentSpecialization}</small>
+                  )}
                 </div>
 
                 {pricing.requiresIndividualEstimate ? (
@@ -1056,6 +1172,40 @@ export function ConstructorModal({ initialProductId, onClose }: ConstructorModal
               </div>
             </aside>
           </div>
+        </div>
+
+        {/* Адаптивная плавающая панель сводки расчёта (всегда на виду при скролле конфигурации) */}
+        <div className="construct-floating-bar">
+          <div className="floating-bar-info">
+            <div className="floating-bar-title">
+              <span className="floating-prod-chip">{selectedProduct.title}</span>
+              {isBundle && (
+                <span className="floating-roles-tag">{selectedSpecs.length} роли</span>
+              )}
+            </div>
+            <div className="floating-bar-prices">
+              {pricing.requiresIndividualEstimate ? (
+                <span className="floating-spec-text">Индивидуальный расчёт</span>
+              ) : (
+                <>
+                  <span className="floating-price">
+                    Запуск: <strong>{pricing.setupPrice?.toLocaleString('ru-RU')} ₽</strong>
+                  </span>
+                  <span className="floating-dot">•</span>
+                  <span className="floating-price">
+                    Месяц: <strong className="gold-text">{pricing.monthlyPrice?.toLocaleString('ru-RU')} ₽/мес</strong>
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+          <button
+            type="button"
+            className="primary-button gold-btn floating-bar-cta"
+            onClick={() => setLeadModalOpen(true)}
+          >
+            {pricing.requiresIndividualEstimate ? 'Индивидуальный расчёт' : 'Оформить заявку'}
+          </button>
         </div>
       </div>
 

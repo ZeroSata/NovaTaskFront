@@ -75,6 +75,7 @@ export interface PublishingOptions {
 export interface ConstructorState {
   productId: string
   agentSpecialization: string
+  agentSpecializations?: string[]
   featureIds: string[]
   integrationIds: string[]
   employeeCount: number
